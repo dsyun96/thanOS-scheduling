@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Nanum+Myeongjo');
+@import url('https://fonts.googleapis.com/css?family=Do+Hyeon|Noto+Serif+KR');
 
 :root {
     --main-color: #bb88ff;
@@ -6,15 +6,23 @@
     --main-bg-color: #eeddff;
 }
 
+/* HTML Element 관련 */
+
 body {
     background: var(--main-bg-color);
-    font-family: 'Nanum Myeongjo', serif;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 16px;
     padding-top: 20px;
     padding-bottom: 20px;
 }
 h1, h2, h3, h4 {
     text-align: center;
-    color: var(--main-color);
+    color: var(--main-color-darker);
+}
+h5 {
+    font-family: 'Do Hyeon', sans-serif;
+    font-size: 18px;
+    margin-bottom: 0px;
 }
 a:hover {
     text-decoration: none;
@@ -22,6 +30,15 @@ a:hover {
 a:active {
     text-decoration: none;
 }
+th, td {
+    text-align: center;
+}
+abbr {
+    text-decoration: none;
+}
+
+/* 부트스트랩 관련 */
+
 .btn-primary {
     border-color: var(--main-color-darker);
     background: var(--main-color);
@@ -44,7 +61,54 @@ a:active {
     color: white;
     background: var(--main-color-darker);
 }
+.progress-bar-blank {
+    background: transparent;
+    color: darkgray;
+}
+.row [class*='col-'] {
+    transition: all 0.5s ease-in-out;
+}
 
+/* style 속성 관련 */
+
+.center {
+    text-align: center;
+}
 .right {
     text-align: right;
+}
+.lightgray {
+    color: lightgray;
+}
+.brown {
+    color: brown;
+}
+.maincolor {
+    color: var(--main-color);
+}
+.bg-maincolor {
+    background-color: var(--main-bg-color);
+}
+.sans {
+    font-family: 'Do Hyeon', sans-serif;
+}
+.big {
+    font-size: 20px;
+}
+
+.animated-txt {
+    position: relative;
+    overflow: hidden;
+    white-space: nowrap;
+    margin: 0 auto;
+    animation: typing 3s steps(50, end);
+}
+
+@keyframes typing {
+    from {
+        width: 0
+    }
+    to {
+        width: 100%
+    }
 }

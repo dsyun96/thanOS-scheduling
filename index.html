@@ -3,16 +3,16 @@
 
 <head>
   <meta charset="utf-8">
-
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="프로세스 스케줄러 시뮬레이터">
-  <meta name="theme-color" content="#eabafa">
+  <meta name="theme-color" content="#bb88ff">
   <title>thanOS 프로세스 스케줄러</title>
 
   <!-- jQuery 3.3.1 -->
   <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
   <!-- Bootstrap 3.3.7 -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 
   <link rel="stylesheet" href="css/main.css">
 
@@ -21,94 +21,157 @@
 <body>
 
 <div class="container">
-  <!--[if IE]>
-  <p class="browserupgrade"><strong>오래된</strong> 브라우저를 사용하고 계시네요. 브라우저를 <a href="https://browsehappy.com/">업데이트</a>해 주세요.</p>
-  <![endif]-->
 
   <div class="row">
-    <div class="col-md-6 col-md-offset-3">
+    <!-- 1열: 입력 폼 -->
+    <div class="col-md-6 col-md-offset-3 col-input">
       <div class="panel panel-default">
         <div class="panel-body">
           <h1>thanOS</h1>
-          <h3>프로세스 스케줄러</h3>
+          <h2>프로세스 스케줄러</h2>
+          <!--[if IE]>
+          <p class="center"><strong>오래된</strong> 브라우저를 사용하고 계시네요. 브라우저를 <a href="https://browsehappy.com/">업데이트</a>해 주세요.</p>
+          <![endif]-->
         </div>
       </div>
       <form class="form">
         <div class="panel panel-default">
           <div class="panel-body">
             <div class="form-group" id="group-technique">
-              <label class="radio control-label">스케줄링 기법</label>
+              <label class="radio control-label big">스케줄링 기법</label>
               <div class="radio-inline">
                 <label>
                   <input type="radio" name="technique" value="FCFS" required>
-                  FCFS
+                  <abbr title="First-Come First-Served">FCFS</abbr>
                 </label>
               </div>
               <div class="radio-inline">
                 <label>
                   <input type="radio" name="technique" value="RR" required>
-                  RR
+                  <abbr title="Round Robin">RR</abbr>
                 </label>
               </div>
               <div class="radio-inline">
                 <label>
                   <input type="radio" name="technique" value="SPN" required>
-                  SPN
+                  <abbr title="Shortest Process Next">SPN</abbr>
                 </label>
               </div>
               <div class="radio-inline">
                 <label>
                   <input type="radio" name="technique" value="SRTN" required>
-                  SRTN
+                  <abbr title="Shortest Remaining Time Next">SRTN</abbr>
                 </label>
               </div>
               <div class="radio-inline">
                 <label>
                   <input type="radio" name="technique" value="HRRN" required>
-                  HRRN
+                  <abbr title="Highest Response Ratio Next">HRRN</abbr>
                 </label>
               </div>
               <div class="radio-inline">
                 <label>
                   <input type="radio" name="technique" value="???" required>
-                  ???
+                  <span class="sans">INFINITY GAUNTLET</span>
                 </label>
               </div>
             </div>
+            <!-- RR 선택 시 이 위치에 시간 단위 입력 칸 생성 -->
             <div class="form-group">
-              <label>프로세스</label>
+              <label class="big">프로세스</label>
               <div class="panel panel-default" id="process-panel-1">
                 <div class="panel-body">
                   <label for="process-1">P1</label>
                   <div class="form-inline" id="process-1">
-                    <label for="arrival">도착 시간</label>
-                    <input type="number" min="0" class="form-control" id="arrival" required>
+                    <label for="arrival-1">도착 시간</label>
+                    <input type="number" min="0" class="form-control" id="arrival-1" required>
                     <br />
-                    <label for="burst">수행 시간</label>
-                    <input type="number" min="1" class="form-control" id="burst" required>
+                    <label for="burst-1">수행 시간</label>
+                    <input type="number" min="1" class="form-control" id="burst-1" required>
                   </div>
                 </div>
               </div>
             </div>
             <div class="form-group right">
-              <button type="button" class="btn btn-primary" id="add-process">추가</button>
+              <!-- 프로세스 추가 시 이 위치에 삭제 버튼 생성 -->
+              <button type="button" class="btn btn-primary" id="add-process"><span class="glyphicon glyphicon-plus"></span> 추가</button>
             </div>
           </div>
         </div>
+
         <div class="panel panel-default">
           <div class="panel-body">
-            <div class="form-group form-inline">
-            </div>
-            <div class="form-group">
-            </div>
-          </div>
-        </div>
-        <div class="panel panel-default">
-          <div class="panel-body">
-            <button type="submit" class="btn btn-primary btn-block">실행</button>
+            <button type="submit" class="big btn btn-primary btn-block" id="run"><span class="glyphicon glyphicon-play"></span> 실행</button>
           </div>
         </div>
       </form>
+    </div>
+
+    <!-- 2열: 출력 파트 -->
+    <div class="col-md-6 col-output" id="out-form" style="opacity: 0;">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <h2 class="animated-txt">프로세서가 열일중입니다...</h2>
+          <h4>RR <span class="maincolor">(δ = 3)</span></h4>
+          <div class="progress" style="height:50px">
+            <div class="progress-bar progress-bar-blank" role="progressbar" style="width: 15%">
+              <h5>Idle</h5>
+            </div>
+            <div class="progress-bar progress-bar-info" role="progressbar" style="width: 15%">
+              <h5>P1</h5>15 <span class="lightgray">/ 15</span>
+            </div>
+            <div class="progress-bar progress-bar-success" role="progressbar" style="width: 10%">
+              <h5>P3</h5>10 <span class="lightgray">/ 25</span>
+            </div>
+            <div class="progress-bar progress-bar-warning" role="progressbar" style="width: 25%">
+              <h5>P2</h5>25 <span class="lightgray">/ 50</span>
+            </div>
+            <div class="progress-bar progress-bar-danger progress-bar-striped active" role="progressbar" style="width:15%">
+              <h5>P4</h5>15 <span class="lightgray">/ 65</span>
+            </div>
+          </div>
+        </div>
+
+        <table class="table table-bordered table-hover">
+          <tr class="bg-maincolor">
+            <th>프로세스</th><th>AT</th><th>BT</th><th>WT</th><th>TT</th><th>NTT</th>
+          </tr>
+          <tr>
+            <td>P1</td><td>3</td><td>4</td><td>0</td><td>4</td><td>1</td>
+          </tr>
+          <tr>
+            <td>P3</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td>
+          </tr>
+          <tr>
+            <td>P2</td><td>2</td><td>3</td><td>5</td><td>7</td><td class="hidden">11</td>
+          </tr>
+          <tr class="danger">
+            <td>P4</td><td>2</td><td>8</td><td>16</td><td>256</td><td><b class="brown">1024</b></td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <h3>프로세스 1</h3>
+          <div class="progress">
+            <div class="progress-bar progress-bar-info" role="progressbar" style="width: 15%">
+              15%
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <h3>프로세스 4</h3>
+          <div class="progress">
+            <div class="progress-bar progress-bar-danger progress-bar-striped active" role="progressbar" style="width: 55%">
+              55%
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -118,39 +181,40 @@
 
 <script type="text/javascript">
   $(function() {  // 페이지 로드 완료 후 스크립트 로드
+
     let isRR = false;
     let cntProcess = 1;
 
     // 프로세스 기법 라디오 버튼 이벤트
-    $("input[type=radio][name=technique]").change(function() {
-      let val = $("input[type=radio][name=technique]:checked").val();
-      if (val === "RR" && !isRR) {
+    $('input[type=radio][name=technique]').change(() => {
+      let val = $('input[type=radio][name=technique]:checked').val();
+      if (val === 'RR' && !isRR) {
         isRR = true;
-        $("#group-technique").after(`
+        $('#group-technique').after(`
           <div class="form-inline" id="delta">
             <label for="delta">δ (Time Quantum)</label>
-            <input type="text" class="form-control" id="delta" required>
+            <input type="number" min="1" class="form-control" id="delta" required>
           </div>
         `);
       }
       else if (isRR) {
         isRR = false;
-        $("#delta").remove();
+        $('#delta').remove();
       }
     });
 
     // 프로세스 추가 버튼 이벤트
-    $("#add-process").click(function() {
+    $('#add-process').click(() => {
       if (cntProcess === 1) {
-        $("#add-process").before(`
-          <button type="button" class="btn btn-primary" id="remove-process">삭제</button>
+        $('#add-process').before(`
+          <button type="button" class="btn btn-primary" id="remove-process"><span class="glyphicon glyphicon-minus"></span> 삭제</button>
         `);
         // 프로세스 삭제 버튼 이벤트
-        $("#remove-process")[0].addEventListener("click", function() {
+        $('#remove-process')[0].addEventListener('click', () => {
           $(`#process-panel-${cntProcess}`).remove();
           --cntProcess;
           if (cntProcess <= 1) {
-            $("#remove-process").remove();
+            $('#remove-process').remove();
           }
         });
       }
@@ -159,17 +223,58 @@
           <div class="panel-body">
             <label for="process-${cntProcess}">P${cntProcess}</label>
             <div class="form-inline" id="process-${cntProcess}">
-            <label for="arrival">도착 시간</label>
-              <input type="number" min="0" class="form-control" id="arrival" required>
+            <label for="arrival-${cntProcess}">도착 시간</label>
+              <input type="number" min="0" class="form-control" id="arrival-${cntProcess}" required>
               <br />
-              <label for="burst">수행 시간</label>
-              <input type="number" min="1" class="form-control" id="burst" required>
+              <label for="burst-${cntProcess}">수행 시간</label>
+              <input type="number" min="1" class="form-control" id="burst-${cntProcess}" required>
             </div>
           </div>
         </div>
       `);
-      console.log(cntProcess);
     });
+
+    // 실행  버튼 이벤트
+    function run() {
+      let technique = $('input[type=radio][name=technique]:checked').val();
+      let delta = null;
+      let arrivals = [];
+      let bursts = [];
+
+      if (technique === 'RR') {
+        // delta 입력 칸은 동적으로 생성됐으니 찾아야 해요
+        delta = $(document).find('input#delta').val();
+      }
+
+      for (let i = 1; i <= cntProcess; ++i) {
+        // 얘네도 동적으로 생성됐는데
+        arrivals.push(document.getElementById(`arrival-${i}`).value);
+        bursts.push(document.getElementById(`burst-${i}`).value);
+      }
+
+      //TODO: 입력 값 유효성 검사
+
+      if (technique) {
+        $('.col-input').removeClass('col-md-offset-3');
+        setTimeout(() => {
+          document.getElementById('out-form').style.opacity = '1';
+        }, 500);
+      }
+      else {
+        alert('프로세스 기법을 선택하세요.');
+        technique.focus();
+      }
+    }
+
+    $(document).on('submit', '.form', function(e) {
+      e.preventDefault();  // 새로고침 방지
+      $.ajax({
+        success: function(html) {
+          run();  // required 필드 검사가 성공하면 실행
+        }
+      });
+    });
+
   });
 </script>
 
