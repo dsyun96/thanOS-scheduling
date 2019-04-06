@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css?family=Do+Hyeon|Noto+Serif+KR');
+﻿@import url('https://fonts.googleapis.com/css?family=Do+Hyeon|Noto+Serif+KR');
 
 :root {
     --main-color: #bb88ff;
-    --main-color-darker: #9966cc;
-    --main-bg-color: #eeddff;
+    --main-color-darker: #C12DFF;
+    --main-bg-color: #000000;
 }
 
 /* HTML Element 관련 */
@@ -14,15 +14,26 @@ body {
     font-size: 16px;
     padding-top: 20px;
     padding-bottom: 20px;
+    background-image: url("https://blogfiles.pstatic.net/MjAxOTA0MDdfOCAg/MDAxNTU0NTY2NjQxNDg3.WfcFCDlRBRSPmtzyPqNdixaacNYYGEKNp1egRmyWKS8g.2Fm0BzOSPQ5FBx2wufGOe-Dda9DArFZoxAA53vBEcw8g.JPEG.khk1262/guntlet_(1).jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+
 }
+
+div.panel-default{
+    background-color: rgba( 255, 255, 255, 0.9 );
+}
+
 h1, h2, h3, h4 {
     text-align: center;
     color: var(--main-color-darker);
+
 }
 h5 {
     font-family: 'Do Hyeon', sans-serif;
     font-size: 18px;
     margin-bottom: 0px;
+
 }
 a:hover {
     text-decoration: none;
