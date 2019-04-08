@@ -132,22 +132,11 @@
                     </div>
                 </div>
 
-                <table class="table table-bordered table-hover">
-                    <tr class="info">
+                <table class="table table-bordered table-hover" >
+                    <tr class="info" >
                         <th>프로세스</th><th>AT</th><th>BT</th><th>WT</th><th>TT</th><th>NTT</th>
                     </tr>
-                    <tr>
-                        <td>P1</td><td>3</td><td>4</td><td>0</td><td>4</td><td>1</td>
-                    </tr>
-                    <tr>
-                        <td>P3</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td>
-                    </tr>
-                    <tr>
-                        <td>P2</td><td>2</td><td>3</td><td>5</td><td>7</td><td class="hidden">11</td>
-                    </tr>
-                    <tr class="danger">
-                        <td>P4</td><td>2</td><td>8</td><td>16</td><td>256</td><td><b class="brown">1024</b></td>
-                    </tr>
+                    <tbody id = "progress-table"></tbody>
                 </table>
             </div>
 
@@ -196,15 +185,17 @@
             <label for="delta">δ (Time Quantum)</label>
             <input type="number" min="1" class="form-control" id="delta" required>
           </div>
-        `);
 
-                        $('#graph-head').after(`
+
+        `);
+                    $('#graph-head').after(`
                        <div class="graph-inline" id="quantum">
-                       <h4>RR<span class="maincolor">(δ = 3)</span></h4>
+                       <h4>RR<span class="maincolor" id ="delta-result">(δ = </span></h4>
                         </div>
                     `);
 
                 }
+
                 else if (isRR) {
                     isRR = false;
                     $('#delta').remove();
@@ -250,15 +241,25 @@
                 let arrivals = [];
                 let bursts = [];
 
+                $('body').css('background-image', 'url(https://www.pixel4k.com/wp-content/uploads/2018/11/thanos-4k_1543619966.jpg)');
+                $('body').css('background-size', '2500px 1500px');
+                $('body').css('background-position', 'center');
+
                 if (technique === 'RR') {
                     // delta 입력 칸은 동적으로 생성됐으니 찾아야 해요
                     delta = $(document).find('input#delta').val();
+
+                    $('#delta-result').html(" ( δ = " + delta+ " )" )
                 }
+
+                $("#progress-table").empty();
 
                 for (let i = 1; i <= cntProcess; ++i) {
                     // 얘네도 동적으로 생성됐는데
                     arrivals.push(document.getElementById(`arrival-${i}`).value);
                     bursts.push(document.getElementById(`burst-${i}`).value);
+
+                    $('#progress-table').append( "<tr><td>" + "p"+i+"</td><td>"+document.getElementById(`arrival-${i}`).value+"</td><td>"+ document.getElementById(`burst-${i}`).value +"</td><td>0</td><td>4</td><td>1</td> </tr>");
                 }
 
                 //TODO: 입력 값 유효성 검사

@@ -14,14 +14,14 @@ body {
     font-size: 16px;
     padding-top: 20px;
     padding-bottom: 20px;
-    background-image: url("https://blogfiles.pstatic.net/MjAxOTA0MDdfOCAg/MDAxNTU0NTY2NjQxNDg3.WfcFCDlRBRSPmtzyPqNdixaacNYYGEKNp1egRmyWKS8g.2Fm0BzOSPQ5FBx2wufGOe-Dda9DArFZoxAA53vBEcw8g.JPEG.khk1262/guntlet_(1).jpg");
+    background-image: url("https://pbs.twimg.com/media/DaREn_JXkAASjQL.jpg");
     background-repeat: no-repeat;
-    background-position: center;
+    background-position: left;
 
 }
 
 div.panel-default{
-    background-color: rgba( 255, 255, 255, 0.9 );
+    background-color: rgba( 255, 255, 255, 0.8 );
 }
 
 h1, h2, h3, h4 {
