@@ -72,7 +72,7 @@
                             <div class="radio-inline">
                                 <label>
                                     <input type="radio" name="technique" value="???" required>
-                                    <abbr title="New algorithm">INFINITY GAUNTLET</abbr>
+                                    <abbr class="sans" title="다뿌셔">INFINITY GAUNTLET</abbr>
                                 </label>
                             </div>
                         </div>
@@ -111,7 +111,8 @@
         <div class="col-md-6 col-output" id="out-form" style="opacity: 0;">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <h2 class="animated-txt" id="graph-head">프로세서가 열일중입니다...</h2>
+                    <h2>프로세서가 열일중입니다...</h2>
+                    <div id="output-subtitle"></div>
 
                     <div class="progress" style="height:50px">
                         <div class="progress-bar progress-bar-blank" role="progressbar" style="width: 15%">
@@ -132,11 +133,11 @@
                     </div>
                 </div>
 
-                <table class="table table-bordered table-hover" >
-                    <tr class="info" >
+                <table class="table table-bordered table-hover">
+                    <tr class="active">
                         <th>프로세스</th><th>AT</th><th>BT</th><th>WT</th><th>TT</th><th>NTT</th>
                     </tr>
-                    <tbody id = "progress-table"></tbody>
+                    <tbody id="process-table"></tbody>
                 </table>
             </div>
 
@@ -171,31 +172,20 @@
         $(function() {  // 페이지 로드 완료 후 스크립트 로드
 
             let isRR = false;
-            let RRcnt = 0;
             let cntProcess = 1;
 
             // 프로세스 기법 라디오 버튼 이벤트
             $('input[type=radio][name=technique]').change(() => {
-                let val = $('input[type=radio][name=technique]:checked').val();
-                if (val === 'RR' && !isRR) {
-                    RRcnt++;
+                let technique = $('input[type=radio][name=technique]:checked').val();
+                if (technique === 'RR' && !isRR) {
                     isRR = true;
                     $('#group-technique').after(`
-          <div class="form-inline" id="delta">
-            <label for="delta">δ (Time Quantum)</label>
-            <input type="number" min="1" class="form-control" id="delta" required>
-          </div>
-
-
-        `);
-                    $('#graph-head').after(`
-                       <div class="graph-inline" id="quantum">
-                       <h4>RR<span class="maincolor" id ="delta-result">(δ = </span></h4>
+                        <div class="form-inline" id="delta">
+                            <label for="delta">δ (Time Quantum)</label>
+                            <input type="number" min="1" class="form-control" id="delta" required>
                         </div>
                     `);
-
                 }
-
                 else if (isRR) {
                     isRR = false;
                     $('#delta').remove();
@@ -219,19 +209,19 @@
                     });
                 }
                 $(`#process-panel-${cntProcess++}`).after(`
-        <div class="panel panel-default" id="process-panel-${cntProcess}">
-          <div class="panel-body">
-            <label for="process-${cntProcess}">P${cntProcess}</label>
-            <div class="form-inline" id="process-${cntProcess}">
-            <label for="arrival-${cntProcess}">도착 시간</label>
-              <input type="number" min="0" class="form-control" id="arrival-${cntProcess}" required>
-              <br />
-              <label for="burst-${cntProcess}">수행 시간</label>
-              <input type="number" min="1" class="form-control" id="burst-${cntProcess}" required>
-            </div>
-          </div>
-        </div>
-      `);
+                    <div class="panel panel-default" id="process-panel-${cntProcess}">
+                        <div class="panel-body">
+                            <label for="process-${cntProcess}">P${cntProcess}</label>
+                            <div class="form-inline" id="process-${cntProcess}">
+                                <label for="arrival-${cntProcess}">도착 시간</label>
+                                <input type="number" min="0" class="form-control" id="arrival-${cntProcess}" required>
+                                <br />
+                                <label for="burst-${cntProcess}">수행 시간</label>
+                                <input type="number" min="1" class="form-control" id="burst-${cntProcess}" required>
+                            </div>
+                        </div>
+                    </div>
+                `);
             });
 
             // 실행  버튼 이벤트
@@ -241,25 +231,9 @@
                 let arrivals = [];
                 let bursts = [];
 
-                $('body').css('background-image', 'url(https://www.pixel4k.com/wp-content/uploads/2018/11/thanos-4k_1543619966.jpg)');
-                $('body').css('background-size', '2500px 1500px');
-                $('body').css('background-position', 'center');
-
-                if (technique === 'RR') {
-                    // delta 입력 칸은 동적으로 생성됐으니 찾아야 해요
-                    delta = $(document).find('input#delta').val();
-
-                    $('#delta-result').html(" ( δ = " + delta+ " )" )
-                }
-
-                $("#progress-table").empty();
-
                 for (let i = 1; i <= cntProcess; ++i) {
-                    // 얘네도 동적으로 생성됐는데
-                    arrivals.push(document.getElementById(`arrival-${i}`).value);
-                    bursts.push(document.getElementById(`burst-${i}`).value);
-
-                    $('#progress-table').append( "<tr><td>" + "p"+i+"</td><td>"+document.getElementById(`arrival-${i}`).value+"</td><td>"+ document.getElementById(`burst-${i}`).value +"</td><td>0</td><td>4</td><td>1</td> </tr>");
+                    arrivals.push($(`#arrival-${i}`).val());
+                    bursts.push($(`#burst-${i}`).val());
                 }
 
                 //TODO: 입력 값 유효성 검사
@@ -274,6 +248,34 @@
                     alert('프로세스 기법을 선택하세요.');
                     technique.focus();
                 }
+
+                // 배경 전환
+                $('body').css('background-image', 'url(https://www.pixel4k.com/wp-content/uploads/2018/11/thanos-4k_1543619966.jpg)');
+                $('body').css('background-size', '2500px 1500px');
+                $('body').css('background-position', 'center');
+
+                if (technique === 'RR') {
+                    // delta 입력 칸은 동적으로 생성됐으니 찾아야 해요
+                    delta = $(document).find('input#delta').val();
+
+                    $('#output-subtitle').html(`
+                        <h4>${technique} <span class="maincolor">(δ = ${delta})</span></h4>
+                    `);
+                }
+                else {
+                    $('#output-subtitle').html(`
+                            <h4>${technique}</h4>
+                        `);
+                }
+
+                $('#process-table').empty();
+
+                for (let i = 1; i <= cntProcess; ++i) {
+                    // 표에 프로세스 데이터 추가
+                    $('#process-table').append(`
+                        <tr><td>P${i}</td><td>${arrivals[i-1]}</td><td>${bursts[i-1]}</td><td>nil</td><td>nil</td><td>nil</td></tr>
+                    `);
+                }
             }
 
             $(document).on('submit', '.form', function(e) {
@@ -287,5 +289,7 @@
         });
     </script>
 </div>
+
 </body>
+
 </html>

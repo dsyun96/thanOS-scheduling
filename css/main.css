@@ -2,14 +2,14 @@
 
 :root {
     --main-color: #bb88ff;
-    --main-color-darker: #C12DFF;
-    --main-bg-color: #000000;
+    --main-color-darker: #9966cc;
+    --main-bg-color: #eeddff;
 }
 
 /* HTML Element 관련 */
 
 body {
-    background: var(--main-bg-color);
+    background: black;
     font-family: 'Noto Serif KR', serif;
     font-size: 16px;
     padding-top: 20px;
@@ -105,21 +105,4 @@ abbr {
 }
 .big {
     font-size: 20px;
-}
-
-.animated-txt {
-    position: relative;
-    overflow: hidden;
-    white-space: nowrap;
-    margin: 0 auto;
-    animation: typing 3s steps(50, end);
-}
-
-@keyframes typing {
-    from {
-        width: 0
-    }
-    to {
-        width: 100%
-    }
 }
