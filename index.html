@@ -249,6 +249,20 @@
                     technique.focus();
                 }
 
+                // 유효성 검사 끝 / 함수 실행 시작
+
+                let waitings = [];
+                let turnArounds = [];
+                let pStates = [];
+                $.getScript("js/execute.js", function() {
+                    [waitings, turnArounds, pStates] = FCFS(cntProcess, arrivals, bursts);
+                });
+                console.log(waitings);
+                console.log(turnArounds);
+                console.log(pStates);
+
+                // 함수 실행 끝 / 출력 시작
+
                 // 배경 전환
                 $('body').css('background-image', 'url(https://www.pixel4k.com/wp-content/uploads/2018/11/thanos-4k_1543619966.jpg)');
                 $('body').css('background-size', '2500px 1500px');
