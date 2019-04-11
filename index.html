@@ -233,8 +233,8 @@
                 let bursts = [];
 
                 for (let i = 1; i <= cntProcess; ++i) {
-                    arrivals.push($(`#arrival-${i}`).val());
-                    bursts.push($(`#burst-${i}`).val());
+                    arrivals.push(parseInt($(`#arrival-${i}`).val()));
+                    bursts.push(parseInt($(`#burst-${i}`).val()));
                 }
 
                 // TODO: 입력 값 유효성 검사
@@ -275,8 +275,15 @@
                         //[waitings, turnArounds, pStates] = Gauntlet(cntProcess, arrivals, bursts);
                         break;
                 }
+                console.log('arrivals:');
+                console.log(arrivals);
+                console.log('bursts:');
+                console.log(bursts);
+                console.log('waitings:');
                 console.log(waitings);
+                console.log('turnArounds:');
                 console.log(turnArounds);
+                console.log('pStates:');
                 console.log(pStates);
 
                 // TODO: 함수 실행 끝 / 출력 시작
