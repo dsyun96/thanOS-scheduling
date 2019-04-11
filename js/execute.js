@@ -8,19 +8,19 @@ function FCFS(n, arrivals, bursts) {
     for (let i = 0; i < n; ++i) processes.push([i, arrivals[i], bursts[i]]);
     processes.sort((a, b) => a[1] - b[1] ? a[1] - b[1] : a[0] - b[0]);
 
-    let waiting = [], turnAround = [], pState = [];
+    let waitings = [], turnArounds = [], pStates = [];
     let time = processes[0][1];
 
     for (let i = 0; i < n; ++i) {
         // i번째로 들어온 프로세스 수행
         let now = processes[i];
 
-        turnAround[now[0]] = time + now[2] - now[1];
-        waiting[now[0]] = turnAround[now[0]] - bursts[now[0]];
-        pState.push([now[0], time, now[2]]);
+        turnArounds[now[0]] = time + now[2] - now[1];
+        waitings[now[0]] = turnArounds[now[0]] - bursts[now[0]];
+        pStates.push([now[0], time, now[2]]);
 
         time += now[2];
     }
 
-    return [waiting, turnAround, pState];
+    return [waitings, turnArounds, pStates];
 }
