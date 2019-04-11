@@ -15,6 +15,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 
     <link rel="stylesheet" href="css/main.css">
+    <script src="js/execute.js"></script>
 
 </head>
 
@@ -254,31 +255,28 @@
                 let waitings = [];
                 let turnArounds = [];
                 let pStates = [];
-                $.getScript('js/execute.js', function() {
-                    switch (technique) {
-                        case 'FCFS':
-                            [waitings, turnArounds, pStates] = FCFS(cntProcess, arrivals, bursts);
-                            break;
-                        case 'RR':
-                            //[waitings, turnArounds, pStates] = RR(cntProcess, arrivals, bursts, delta);
-                            break;
-                        case 'SPN':
-                            //[waitings, turnArounds, pStates] = SPN(cntProcess, arrivals, bursts);
-                            break;
-                        case 'SRTN':
-                            //[waitings, turnArounds, pStates] = SRTN(cntProcess, arrivals, bursts);
-                            break;
-                        case 'HRRN':
-                            //[waitings, turnArounds, pStates] = HRRN(cntProcess, arrivals, bursts);
-                            break;
-                        case 'INFINITY GAUNTLET':
-                            //[waitings, turnArounds, pStates] = Gauntlet(cntProcess, arrivals, bursts);
-                            break;
-                    }
-                });
-
-                console.log(`waitings: ${waitings}`);
-                console.log(`turnArounds: ${turnArounds}`);
+                switch (technique) {
+                    case 'FCFS':
+                        [waitings, turnArounds, pStates] = FCFS(cntProcess, arrivals, bursts);
+                        break;
+                    case 'RR':
+                        //[waitings, turnArounds, pStates] = RR(cntProcess, arrivals, bursts, delta);
+                        break;
+                    case 'SPN':
+                        //[waitings, turnArounds, pStates] = SPN(cntProcess, arrivals, bursts);
+                        break;
+                    case 'SRTN':
+                        //[waitings, turnArounds, pStates] = SRTN(cntProcess, arrivals, bursts);
+                        break;
+                    case 'HRRN':
+                        //[waitings, turnArounds, pStates] = HRRN(cntProcess, arrivals, bursts);
+                        break;
+                    case 'INFINITY GAUNTLET':
+                        //[waitings, turnArounds, pStates] = Gauntlet(cntProcess, arrivals, bursts);
+                        break;
+                }
+                console.log(waitings);
+                console.log(turnArounds);
                 console.log(pStates);
 
                 // TODO: 함수 실행 끝 / 출력 시작
