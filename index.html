@@ -15,6 +15,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 
     <link rel="stylesheet" href="css/main.css">
+    <script src="js/execute.js"></script>
 
 </head>
 
@@ -71,7 +72,7 @@
                             </div>
                             <div class="radio-inline">
                                 <label>
-                                    <input type="radio" name="technique" value="???" required>
+                                    <input type="radio" name="technique" value="INFINITY GAUNTLET" required>
                                     <abbr class="sans" title="다뿌셔">INFINITY GAUNTLET</abbr>
                                 </label>
                             </div>
@@ -111,9 +112,9 @@
         <div class="col-md-6 col-output" id="out-form" style="opacity: 0;">
             <div class="panel panel-default">
                 <div class="panel-body">
-                    <h2>프로세서가 열일중입니다...</h2>
-                    <div id="output-subtitle"></div>
+                    <h2 id="out-title">안녕하살법</h2>
 
+                    <h3>프로세서</h3>
                     <div class="progress" style="height:50px">
                         <div class="progress-bar progress-bar-blank" role="progressbar" style="width: 15%">
                             <h5>Idle</h5>
@@ -236,7 +237,7 @@
                     bursts.push($(`#burst-${i}`).val());
                 }
 
-                //TODO: 입력 값 유효성 검사
+                // TODO: 입력 값 유효성 검사
 
                 if (technique) {
                     $('.col-input').removeClass('col-md-offset-3');
@@ -249,19 +250,36 @@
                     technique.focus();
                 }
 
-                // 유효성 검사 끝 / 함수 실행 시작
+                // TODO: 유효성 검사 끝 / 함수 실행
 
                 let waitings = [];
                 let turnArounds = [];
                 let pStates = [];
-                $.getScript("js/execute.js", function() {
-                    [waitings, turnArounds, pStates] = FCFS(cntProcess, arrivals, bursts);
-                });
+                switch (technique) {
+                    case 'FCFS':
+                        [waitings, turnArounds, pStates] = FCFS(cntProcess, arrivals, bursts);
+                        break;
+                    case 'RR':
+                        //[waitings, turnArounds, pStates] = RR(cntProcess, arrivals, bursts, delta);
+                        break;
+                    case 'SPN':
+                        //[waitings, turnArounds, pStates] = SPN(cntProcess, arrivals, bursts);
+                        break;
+                    case 'SRTN':
+                        //[waitings, turnArounds, pStates] = SRTN(cntProcess, arrivals, bursts);
+                        break;
+                    case 'HRRN':
+                        //[waitings, turnArounds, pStates] = HRRN(cntProcess, arrivals, bursts);
+                        break;
+                    case 'INFINITY GAUNTLET':
+                        //[waitings, turnArounds, pStates] = Gauntlet(cntProcess, arrivals, bursts);
+                        break;
+                }
                 console.log(waitings);
                 console.log(turnArounds);
                 console.log(pStates);
 
-                // 함수 실행 끝 / 출력 시작
+                // TODO: 함수 실행 끝 / 출력 시작
 
                 // 배경 전환
                 $('body').css('background-image', 'url(https://www.pixel4k.com/wp-content/uploads/2018/11/thanos-4k_1543619966.jpg)');
@@ -272,13 +290,13 @@
                     // delta 입력 칸은 동적으로 생성됐으니 찾아야 해요
                     delta = $(document).find('input#delta').val();
 
-                    $('#output-subtitle').html(`
-                        <h4>${technique} <span class="maincolor">(δ = ${delta})</span></h4>
+                    $('#out-title').html(`
+                        ${technique} <span class="maincolor">(δ = ${delta})</span>
                     `);
                 }
                 else {
-                    $('#output-subtitle').html(`
-                            <h4>${technique}</h4>
+                    $('#out-title').html(`
+                            ${technique}
                         `);
                 }
 
@@ -290,7 +308,7 @@
                         <tr><td>P${i}</td><td>${arrivals[i-1]}</td><td>${bursts[i-1]}</td><td>nil</td><td>nil</td><td>nil</td></tr>
                     `);
                 }
-            }
+            }  // end of run()
 
             $(document).on('submit', '.form', function(e) {
                 e.preventDefault();  // 새로고침 방지
