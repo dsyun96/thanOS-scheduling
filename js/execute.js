@@ -9,7 +9,7 @@ function FCFS(n, arrivals, bursts) {
     processes.sort((a, b) => a[1] - b[1] ? a[1] - b[1] : a[0] - b[0]);
 
     let waiting = [], turnAround = [], pState = [];
-    let time = 0;
+    let time = processes[0][1];
 
     for (let i = 0; i < n; ++i) {
         // i번째로 들어온 프로세스 수행
