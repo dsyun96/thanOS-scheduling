@@ -115,22 +115,8 @@
                     <h2 id="out-title">안녕하살법</h2>
 
                     <h3>프로세서</h3>
-                    <div class="progress" style="height:50px">
-                        <div class="progress-bar progress-bar-blank" role="progressbar" style="width: 15%">
-                            <h5>Idle</h5>
-                        </div>
-                        <div class="progress-bar progress-bar-info" role="progressbar" style="width: 15%">
-                            <h5>P1</h5>15 <span class="lightgray">/ 15</span>
-                        </div>
-                        <div class="progress-bar progress-bar-success" role="progressbar" style="width: 10%">
-                            <h5>P3</h5>10 <span class="lightgray">/ 25</span>
-                        </div>
-                        <div class="progress-bar progress-bar-warning" role="progressbar" style="width: 25%">
-                            <h5>P2</h5>25 <span class="lightgray">/ 50</span>
-                        </div>
-                        <div class="progress-bar progress-bar-danger progress-bar-striped active" role="progressbar" style="width:15%">
-                            <h5>P4</h5>15 <span class="lightgray">/ 65</span>
-                        </div>
+                    <div class="progress" id ="progress-body" style="height:50px">
+
                     </div>
                 </div>
 
@@ -146,7 +132,7 @@
                 <div class="panel-body">
                     <h3>프로세스 1</h3>
                     <div class="progress">
-                        <div class="progress-bar progress-bar-info" role="progressbar" style="width: 15%">
+                        <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" style="width: 15%">
                             15%
                         </div>
                     </div>
@@ -175,6 +161,7 @@
             let isRR = false;
             let cntProcess = 1;
 
+
             // 프로세스 기법 라디오 버튼 이벤트
             $('input[type=radio][name=technique]').change(() => {
                 let technique = $('input[type=radio][name=technique]:checked').val();
@@ -194,6 +181,7 @@
                 }
             });
 
+
             // 프로세스 추가 버튼 이벤트
             $('#add-process').click(() => {
                 if (cntProcess === 1) {
@@ -209,6 +197,7 @@
                         }
                     });
                 }
+
                 $(`#process-panel-${cntProcess++}`).after(`
                     <div class="panel panel-default" id="process-panel-${cntProcess}">
                         <div class="panel-body">
@@ -225,12 +214,28 @@
                 `);
             });
 
+            function getRandomColor() {
+                var letters = '0123456789ABCDEF';
+                var color = '#';
+                for (var i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
+            }
+
+            function setColors(color) {
+
+                for(let i = 1; i<=cntProcess; ++i)
+                color.push(getRandomColor());
+            }
+
             // 실행  버튼 이벤트
             function run() {
                 let technique = $('input[type=radio][name=technique]:checked').val();
                 let delta = null;
                 let arrivals = [];
                 let bursts = [];
+                let color = [];
 
                 for (let i = 1; i <= cntProcess; ++i) {
                     arrivals.push(parseInt($(`#arrival-${i}`).val()));
@@ -308,11 +313,28 @@
                 }
 
                 $('#process-table').empty();
+                $('#progress-body').empty();
 
                 for (let i = 1; i <= cntProcess; ++i) {
                     // 표에 프로세스 데이터 추가
                     $('#process-table').append(`
-                        <tr><td>P${i}</td><td>${arrivals[i-1]}</td><td>${bursts[i-1]}</td><td>nil</td><td>nil</td><td>nil</td></tr>
+                        <tr><td>P${i}</td><td>${arrivals[i-1]}</td><td>${bursts[i-1]}</td><td>${waitings[i]}</td><td>${turnArounds[i]}</td><td>${(turnArounds[i]/bursts[i-1]).toFixed(1)}</td></tr>
+                    `);
+                }
+
+                let sum = 0;
+                for (let i = 1; i <= cntProcess; ++i) {
+                    sum += bursts[i-1];
+                }
+
+                setColors(color);
+
+                for (let i = 1; i <= cntProcess; ++i) {
+                    $('#progress-body').append(`
+
+                        <div class="progress-bar progress-bar-striped active" style="width: ${(bursts[i-1]/sum)*100}%; background-color: ${color[i]}">
+                        <h5>P${i}</h5>
+                        </div>
                     `);
                 }
             }  // end of run()

@@ -72,6 +72,11 @@ abbr {
     color: white;
     background: var(--main-color-darker);
 }
+
+.progress {
+    height: 50px;
+}
+
 .progress-bar-blank {
     background: transparent;
     color: darkgray;
