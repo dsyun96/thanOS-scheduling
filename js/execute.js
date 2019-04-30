@@ -11,8 +11,8 @@
 
 function FCFS(cntProcess, arrivals, bursts) {
     let processes = [];
-    for (let i = 0; i < cntProcess; ++i) {
-        processes.push([i + 1, arrivals[i], bursts[i]]);
+    for (let i = 1; i <= cntProcess; ++i) {
+        processes.push([i, arrivals[i], bursts[i]]);
     }
 
     processes.sort((a, b) => a[1] - b[1] ? a[1] - b[1] : a[0] - b[0]);
