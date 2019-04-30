@@ -318,15 +318,28 @@
                 // 프로세서상태 pStates[ [processIdx, timeStart, timeStay], ... ]
                 for (let i = 0; i < pStates.length; ++i) {
                     let pIdx = pStates[i][0];
-                    let width = ( bursts[pIdx] / sum) * 100;  // %
-                    $('#progress-body').append(`
+                    let timeStay = pStates[i][2];
+                    let width = ( timeStay / sum) * 100;  // %
+                    if (pIdx === null || pIdx === undefined) {
+                        $('#progress-body').append(`
+                        <div class="progress-bar progress-bar-blank progress-bar-striped active"
+                            style="width: ${width}%; background-color: ${colors[pIdx]}">
+                            <span class="content">
+                                <h5>Idle</h5>${timeStay}초
+                            </span>
+                        </div>
+                        `);
+                    }
+                    else {
+                        $('#progress-body').append(`
                         <div class="progress-bar progress-bar-striped active"
                             style="width: ${width}%; background-color: ${colors[pIdx]}">
                             <span class="content">
-                                <h5>P${pIdx}</h5>${bursts[pIdx]} <span class="lightgray">/ ${bursts[pIdx]}</span>
+                                <h5>P${pIdx}</h5>${timeStay}초 <span class="lightgray">/ ${bursts[pIdx]}초</span>
                             </span>
                         </div>
                     `);
+                    }
                 }
             }  // end of run()
 
