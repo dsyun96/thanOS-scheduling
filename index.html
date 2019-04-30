@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ko">
 
 <head>
@@ -16,6 +16,7 @@
 
     <link rel="stylesheet" href="css/main.css">
     <script src="js/execute.js"></script>
+    <script src="js/funcs.js"></script>
 
 </head>
 
@@ -115,22 +116,8 @@
                     <h2 id="out-title">안녕하살법</h2>
 
                     <h3>프로세서</h3>
-                    <div class="progress" style="height:50px">
-                        <div class="progress-bar progress-bar-blank" role="progressbar" style="width: 15%">
-                            <h5>Idle</h5>
-                        </div>
-                        <div class="progress-bar progress-bar-info" role="progressbar" style="width: 15%">
-                            <h5>P1</h5>15 <span class="lightgray">/ 15</span>
-                        </div>
-                        <div class="progress-bar progress-bar-success" role="progressbar" style="width: 10%">
-                            <h5>P3</h5>10 <span class="lightgray">/ 25</span>
-                        </div>
-                        <div class="progress-bar progress-bar-warning" role="progressbar" style="width: 25%">
-                            <h5>P2</h5>25 <span class="lightgray">/ 50</span>
-                        </div>
-                        <div class="progress-bar progress-bar-danger progress-bar-striped active" role="progressbar" style="width:15%">
-                            <h5>P4</h5>15 <span class="lightgray">/ 65</span>
-                        </div>
+                    <div class="progress" id ="progress-body" style="height:50px">
+
                     </div>
                 </div>
 
@@ -146,7 +133,7 @@
                 <div class="panel-body">
                     <h3>프로세스 1</h3>
                     <div class="progress">
-                        <div class="progress-bar progress-bar-info" role="progressbar" style="width: 15%">
+                        <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" style="width: 15%">
                             15%
                         </div>
                     </div>
@@ -175,6 +162,7 @@
             let isRR = false;
             let cntProcess = 1;
 
+
             // 프로세스 기법 라디오 버튼 이벤트
             $('input[type=radio][name=technique]').change(() => {
                 let technique = $('input[type=radio][name=technique]:checked').val();
@@ -194,6 +182,7 @@
                 }
             });
 
+
             // 프로세스 추가 버튼 이벤트
             $('#add-process').click(() => {
                 if (cntProcess === 1) {
@@ -209,6 +198,7 @@
                         }
                     });
                 }
+
                 $(`#process-panel-${cntProcess++}`).after(`
                     <div class="panel panel-default" id="process-panel-${cntProcess}">
                         <div class="panel-body">
@@ -229,8 +219,8 @@
             function run() {
                 let technique = $('input[type=radio][name=technique]:checked').val();
                 let delta = null;
-                let arrivals = [];
-                let bursts = [];
+                let arrivals = [null];  // P1 -> arrivals[1]
+                let bursts = [null];
 
                 for (let i = 1; i <= cntProcess; ++i) {
                     arrivals.push(parseInt($(`#arrival-${i}`).val()));
@@ -275,16 +265,6 @@
                         //[waitings, turnArounds, pStates] = Gauntlet(cntProcess, arrivals, bursts);
                         break;
                 }
-                console.log('arrivals:');
-                console.log(arrivals);
-                console.log('bursts:');
-                console.log(bursts);
-                console.log('waitings:');
-                console.log(waitings);
-                console.log('turnArounds:');
-                console.log(turnArounds);
-                console.log('pStates:');
-                console.log(pStates);
 
                 // TODO: 함수 실행 끝 / 출력 시작
 
@@ -307,12 +287,45 @@
                         `);
                 }
 
-                $('#process-table').empty();
+                // 테이블
 
+                $('#process-table').empty();
+                $('#progress-body').empty();
                 for (let i = 1; i <= cntProcess; ++i) {
-                    // 표에 프로세스 데이터 추가
                     $('#process-table').append(`
-                        <tr><td>P${i}</td><td>${arrivals[i-1]}</td><td>${bursts[i-1]}</td><td>nil</td><td>nil</td><td>nil</td></tr>
+                        <tr>
+                            <td>P${i}</td>
+                            <td>${arrivals[i]}</td>
+                            <td>${bursts[i]}</td>
+                            <td>${waitings[i]}</td>
+                            <td>${turnArounds[i]}</td>
+                            <td>${(turnArounds[i]/bursts[i]).toFixed(1)}</td>
+                        </tr>
+                    `);
+                }
+
+                // 프로그레스 바
+
+                let colors = [null];
+                setColors(colors, cntProcess);  // funcs.js
+
+                let sum = Math.min.apply(null, arrivals.slice(1));
+                console.log(sum);
+                for (let i = 1; i <= cntProcess; ++i) {
+                    sum += bursts[i];
+                }
+                console.log(pStates);
+                // 프로세서상태 pStates[ [processIdx, timeStart, timeStay], ... ]
+                for (let i = 0; i < pStates.length; ++i) {
+                    let pIdx = pStates[i][0];
+                    let width = ( bursts[pIdx] / sum) * 100;  // %
+                    $('#progress-body').append(`
+                        <div class="progress-bar progress-bar-striped active"
+                            style="width: ${width}%; background-color: ${colors[pIdx]}">
+                            <span class="content">
+                                <h5>P${pIdx}</h5>${bursts[pIdx]} <span class="lightgray">/ ${bursts[pIdx]}</span>
+                            </span>
+                        </div>
                     `);
                 }
             }  // end of run()
