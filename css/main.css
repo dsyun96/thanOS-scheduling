@@ -1,4 +1,4 @@
-﻿@import url('https://fonts.googleapis.com/css?family=Do+Hyeon|Noto+Serif+KR');
+@import url('https://fonts.googleapis.com/css?family=Do+Hyeon|Noto+Serif+KR');
 
 :root {
     --main-color: #bb88ff;
@@ -72,10 +72,16 @@ abbr {
     color: white;
     background: var(--main-color-darker);
 }
+
+.progress {
+    height: 50px;
+}
+
 .progress-bar-blank {
     background: transparent;
     color: darkgray;
 }
+
 .row [class*='col-'] {
     transition: all 0.5s ease-in-out;
 }
