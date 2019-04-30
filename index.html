@@ -16,6 +16,7 @@
 
     <link rel="stylesheet" href="css/main.css">
     <script src="js/execute.js"></script>
+    <script src="js/funcs.js"></script>
 
 </head>
 
@@ -214,28 +215,12 @@
                 `);
             });
 
-            function getRandomColor() {
-                var letters = '0123456789ABCDEF';
-                var color = '#';
-                for (var i = 0; i < 6; i++) {
-                    color += letters[Math.floor(Math.random() * 16)];
-                }
-                return color;
-            }
-
-            function setColors(color) {
-
-                for(let i = 1; i<=cntProcess; ++i)
-                color.push(getRandomColor());
-            }
-
             // 실행  버튼 이벤트
             function run() {
                 let technique = $('input[type=radio][name=technique]:checked').val();
                 let delta = null;
-                let arrivals = [];
-                let bursts = [];
-                let color = [];
+                let arrivals = [null];  // P1 -> arrivals[1]
+                let bursts = [null];
 
                 for (let i = 1; i <= cntProcess; ++i) {
                     arrivals.push(parseInt($(`#arrival-${i}`).val()));
@@ -280,16 +265,6 @@
                         //[waitings, turnArounds, pStates] = Gauntlet(cntProcess, arrivals, bursts);
                         break;
                 }
-                console.log('arrivals:');
-                console.log(arrivals);
-                console.log('bursts:');
-                console.log(bursts);
-                console.log('waitings:');
-                console.log(waitings);
-                console.log('turnArounds:');
-                console.log(turnArounds);
-                console.log('pStates:');
-                console.log(pStates);
 
                 // TODO: 함수 실행 끝 / 출력 시작
 
@@ -312,28 +287,44 @@
                         `);
                 }
 
+                // 테이블
+
                 $('#process-table').empty();
                 $('#progress-body').empty();
-
                 for (let i = 1; i <= cntProcess; ++i) {
-                    // 표에 프로세스 데이터 추가
                     $('#process-table').append(`
-                        <tr><td>P${i}</td><td>${arrivals[i-1]}</td><td>${bursts[i-1]}</td><td>${waitings[i]}</td><td>${turnArounds[i]}</td><td>${(turnArounds[i]/bursts[i-1]).toFixed(1)}</td></tr>
+                        <tr>
+                            <td>P${i}</td>
+                            <td>${arrivals[i]}</td>
+                            <td>${bursts[i]}</td>
+                            <td>${waitings[i]}</td>
+                            <td>${turnArounds[i]}</td>
+                            <td>${(turnArounds[i]/bursts[i]).toFixed(1)}</td>
+                        </tr>
                     `);
                 }
 
-                let sum = 0;
+                // 프로그레스 바
+
+                let colors = [null];
+                setColors(colors, cntProcess);  // funcs.js
+
+                let sum = Math.min.apply(null, arrivals.slice(1));
+                console.log(sum);
                 for (let i = 1; i <= cntProcess; ++i) {
-                    sum += bursts[i-1];
+                    sum += bursts[i];
                 }
-
-                setColors(color);
-
-                for (let i = 1; i <= cntProcess; ++i) {
+                console.log(pStates);
+                // 프로세서상태 pStates[ [processIdx, timeStart, timeStay], ... ]
+                for (let i = 0; i < pStates.length; ++i) {
+                    let pIdx = pStates[i][0];
+                    let width = ( bursts[pIdx] / sum) * 100;  // %
                     $('#progress-body').append(`
-
-                        <div class="progress-bar progress-bar-striped active" style="width: ${(bursts[i-1]/sum)*100}%; background-color: ${color[i]}">
-                        <h5>P${i}</h5>
+                        <div class="progress-bar progress-bar-striped active"
+                            style="width: ${width}%; background-color: ${colors[pIdx]}">
+                            <span class="content">
+                                <h5>P${pIdx}</h5>${bursts[pIdx]} <span class="lightgray">/ ${bursts[pIdx]}</span>
+                            </span>
                         </div>
                     `);
                 }

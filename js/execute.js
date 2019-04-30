@@ -1,6 +1,12 @@
 /*
-입력: 프로세스개수 n 도착시간배열 arrivals[2, 5, ...] 수행시간배열 bursts[3, 7, ...]
-출력: 대기시간배열 waitings[] 수행시간배열 turnArounds[] 프로세서상태 pStates[[processIdx, timeStart, timeStay], ...]
+입력:
+프로세스개수 n
+도착시간배열 arrivals[2, 5, ...]
+수행시간배열 bursts[3, 7, ...]
+출력:
+대기시간배열 waitings[]
+수행시간배열 turnArounds[]
+프로세서상태 pStates[ [processIdx, timeStart, timeStay], ... ]
 */
 
 function FCFS(cntProcess, arrivals, bursts) {
@@ -11,7 +17,7 @@ function FCFS(cntProcess, arrivals, bursts) {
 
     processes.sort((a, b) => a[1] - b[1] ? a[1] - b[1] : a[0] - b[0]);
 
-    let waitings = [undefined], turnArounds = [undefined], pStates = [];
+    let waitings = [null], turnArounds = [null], pStates = [];
     let time = 0;
 
     for (let i = 0; i < cntProcess; ++i) {
@@ -19,7 +25,7 @@ function FCFS(cntProcess, arrivals, bursts) {
         let now = processes[i];
 
         if (time < now[1]) {
-            pStates.push([undefined, time, now[1] - time]);
+            pStates.push([null, time, now[1] - time]);
             time = now[1];
         }
 
