@@ -30,7 +30,7 @@ function FCFS(cntProcess, arrivals, bursts) {
         }
 
         turnArounds[now[0]] = time + now[2] - now[1];
-        waitings[now[0]] = turnArounds[now[0]] - bursts[now[0] - 1];
+        waitings[now[0]] = turnArounds[now[0]] - bursts[now[0]];
         pStates.push([now[0], time, now[2]]);
 
         time += now[2];
