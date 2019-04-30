@@ -247,9 +247,6 @@
                 let pStates = [];
                 switch (technique) {
                     case 'FCFS':
-                        console.log(cntProcess);
-                        console.log(arrivals);
-                        console.log(bursts);
                         [waitings, turnArounds, pStates] = FCFS(cntProcess, arrivals, bursts);
                         break;
                     case 'RR':
