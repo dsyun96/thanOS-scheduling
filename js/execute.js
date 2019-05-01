@@ -9,14 +9,18 @@
 프로세서상태 pStates[ [processIdx, timeStart, timeStay], ... ]
 */
 
-function FCFS(cntProcess, arrivals, bursts) {
+function getProcesses(cntProcess, arrivals, bursts) {
     let processes = [];
-    for (let i = 0; i < cntProcess; ++i) {
-        processes.push([i + 1, arrivals[i], bursts[i]]);
+    for (let i = 1; i <= cntProcess; ++i) {
+        processes.push({pid: i, arrival: arrivals[i], burst: bursts[i]});
     }
+    return processes;
+}
 
-    processes.sort((a, b) => a[1] - b[1] ? a[1] - b[1] : a[0] - b[0]);
-
+function FCFS(cntProcess, arrivals, bursts) {
+    let processes = getProcesses(cntProcess, arrivals, bursts);
+    processes.sort((a, b) => a.arrival - b.arrival ? a.arrival - b.arrival : a.pid - b.pid);
+    
     let waitings = [null], turnArounds = [null], pStates = [];
     let time = 0;
 
@@ -24,17 +28,62 @@ function FCFS(cntProcess, arrivals, bursts) {
         // i번째로 들어온 프로세스 수행
         let now = processes[i];
 
-        if (time < now[1]) {
-            pStates.push([null, time, now[1] - time]);
-            time = now[1];
+        if (time < now.arrival) {
+            pStates.push([null, time, now.arrival - time]);
+            time = now.arrival;
         }
 
-        turnArounds[now[0]] = time + now[2] - now[1];
-        waitings[now[0]] = turnArounds[now[0]] - bursts[now[0] - 1];
-        pStates.push([now[0], time, now[2]]);
+        turnArounds[now.pid] = time + now.burst - now.arrival;
+        waitings[now.pid] = turnArounds[now.pid] - bursts[now.pid];
+        pStates.push([now.pid, time, now.burst]);
 
-        time += now[2];
+        time += now.burst;
     }
 
+    return [waitings, turnArounds, pStates];
+}
+
+function SRTN(cntProcess, arrivals, bursts) {
+    let processes = getProcesses(cntProcess, arrivals, bursts);
+    let waitings = [null], turnArounds = [null], pStates = [];
+    let time = 0;
+    
+    arrivals = Array.from(new Set(arrivals));
+    arrivals.pop();
+    arrivals.push(1e200);
+    
+    for (let i = 0; i < arrivals.length - 1; ++i) {
+        // eventTime = 이벤트가 발생한 시간
+        let eventTime = arrivals[i];
+        let tmpProc = [];
+        let nextTime = arrivals[i + 1];
+        
+        for (let j = 0; j < cntProcess; ++j)
+            if (processes[j].arrival <= eventTime) tmpProc.push(j);
+        
+        // 지금부터 다음 이벤트가 발생하기 전까지는 burst 가장 짧은 놈을 계속 돌린다
+        while (time < nextTime) {
+            if (time < eventTime) {
+                pStates.push([null, time, eventTime - time]);
+                time = eventTime;
+            }
+            
+            let idx = -1, max = 1e200;
+            for (let j = 0; j < tmpProc.length; ++j) {
+                let now = processes[tmpProc[j]];
+                if (now.burst < max) {
+                    max = now.burst;
+                    idx = tmpProc[j];
+                }
+            }
+            
+            // idx번째가 가장 짧은 놈
+            let exec = Math.min(nextTime - time, processes[idx].burst);
+            pStates.push([idx, time, exec]);
+            time += exec;
+            processes[idx].burst -= exec;
+        }
+    }
+    
     return [waitings, turnArounds, pStates];
 }
