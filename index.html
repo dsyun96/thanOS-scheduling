@@ -290,7 +290,7 @@
                         `);
                 }
 
-                // 테이블
+                // 테이블, 시간 바, 간트 바 초기화
 
                 $('#process-table').empty();
                 $('#progress-body').empty();
@@ -322,6 +322,7 @@
                 console.log(pStates);
                 // 프로세서상태 pStates[ [processIdx, timeStart, timeStay], ... ]
 
+                //도착 시간을 표시해주는 bar
                 for (let i = 0; i < pStates.length; ++i) {
                     let pIdx = pStates[i][0];
                     let timeStay = pStates[i][2];
