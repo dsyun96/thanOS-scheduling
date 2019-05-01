@@ -309,10 +309,10 @@
                 let colors = [null];
                 setColors(colors, cntProcess);  // funcs.js
 
-                let sum = Math.min.apply(null, arrivals.slice(1));
+                let sum = 0;
                 console.log(sum);
-                for (let i = 1; i <= cntProcess; ++i) {
-                    sum += bursts[i];
+                 for (let i = 0; i < pStates.length ; ++i) {
+                    sum += pStates[i][2];
                 }
                 console.log(pStates);
                 // 프로세서상태 pStates[ [processIdx, timeStart, timeStay], ... ]
