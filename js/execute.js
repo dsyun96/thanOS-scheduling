@@ -52,7 +52,7 @@ function SRTN(cntProcess, arrivals, bursts) {
     arrivals.shift();
     arrivals = Array.from(new Set(arrivals));
     arrivals.push(Infinity);
-    arrivals.sort();
+    arrivals.sort((a, b) => a - b);
     
     for (let i = 0; i < arrivals.length - 1; ++i) {
         // eventTime = 이벤트가 발생한 시간

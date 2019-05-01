@@ -272,7 +272,7 @@
                 // TODO: 함수 실행 끝 / 출력 시작
 
                 // 배경 전환
-                $('body').css('background-image', 'url(https://www.pixel4k.com/wp-content/uploads/2018/11/thanos-4k_1543619966.jpg)');
+                $('body').css('background-image', 'URL(https://ifh.cc/g/jkILS.png');
                 $('body').css('background-size', '2500px 1500px');
                 $('body').css('background-position', 'center');
 
@@ -362,14 +362,26 @@
                         `);
                     }
                     else {
-                        $('#progress-body').append(`
+                        if(technique=='FCFS'||technique=='SPN'||technique=='HRRN') {
+                            $('#progress-body').append(`
+                        <div class="progress-bar progress-bar-striped active"
+                            style="width: ${width}%; background-color: ${colors[pIdx]}">
+                            <span class="content">
+                                <h5>P${pIdx}</h5>${timeStay}초
+                            </span>
+                        </div>
+                            `);
+                        }
+                        else if(technique=='RR'||technique=='SRTN') {
+                            $('#progress-body').append(`
                         <div class="progress-bar progress-bar-striped active"
                             style="width: ${width}%; background-color: ${colors[pIdx]}">
                             <span class="content">
                                 <h5>P${pIdx}</h5>${timeStay}초 <span class="lightgray">/ ${bursts[pIdx]}초</span>
                             </span>
                         </div>
-                    `);
+                            `);
+                        }
                     }
                 }
             }  // end of run()
