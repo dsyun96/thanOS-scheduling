@@ -38,3 +38,62 @@ function FCFS(cntProcess, arrivals, bursts) {
 
     return [waitings, turnArounds, pStates];
 }
+
+
+function GetProcesses(cntProcess, arrivals, bursts) {
+    let processes = [];
+    for (let i = 1; i <= cntProcess; ++i) {
+        processes.push({pid: i, arrival: arrivals[i], burst: bursts[i]});
+    }
+    return processes;
+}
+
+function SPN(cntProcess, arrivals, bursts) {
+    let processes = GetProcesses(cntProcess, arrivals, bursts);
+    processes.sort(function (a, b) {
+        let diff = a.arrival - b.arrival;
+        if (diff)
+            return diff;
+        diff = a.burst - b.burst;
+        if (diff)
+            return diff;
+        return a.pid - b.pid;
+    });
+
+    let waitings = [null], turnArounds = [null], pStates = [];
+    let time = 0;
+    processes.forEach(function (now) {
+        if (time < now.arrival) {
+            pStates.push([null, time, now.arrival - time]);
+            time = now.arrival;
+        }
+        turnArounds[now.pid] = time + now.burst - now.arrival;
+        waitings[now.pid] = turnArounds[now.pid] - bursts[now.pid];
+        pStates.push([now.pid, time, now.burst]);
+        time += now.burst;
+    });
+    return [waitings, turnArounds, pStates];
+}
+
+function RR(cntProcess, arrivals, bursts, tqu) { //tqu : Time QUantum
+    let processes = GetProcesses(cntProcess, arrivals, bursts);
+    processes = processes.map(p => {
+        return {pid: p.pid, arrival: p.arrival, burst: p.burst, remain: p.burst};
+    });
+    processes.sort((a, b) => a.arrival - b.arrival ? a.arrival - b.arrival : a.pid - b.pid);
+
+    let waitings = [null], turnArounds = [null], pStates = [];
+    let time = 0;
+    let queue = [];
+
+}
+
+function SRTN(cntProcess, arrivals, bursts) {
+    let processes = GetProcesses(cntProcess, arrivals, bursts);
+}
+
+
+function HRRN(cntProcess, arrivals, bursts) {
+    let processes = GetProcesses(cntProcess, arrivals, bursts);
+}
+
