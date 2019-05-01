@@ -29,7 +29,7 @@ function FCFS(cntProcess, arrivals, bursts) {
         let now = processes[i];
 
         if (time < now.arrival) {
-            pStates.push([null, time, now[1] - time]);
+            pStates.push([null, time, now.arrival - time]);
             time = now.arrival;
         }
 
