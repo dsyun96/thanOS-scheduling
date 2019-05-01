@@ -116,8 +116,11 @@
                     <h2 id="out-title">안녕하살법</h2>
 
                     <h3>프로세서</h3>
-                    <div class="progress" id ="progress-body" style="height:50px">
 
+                    <div class="progress" id ="progress-time" style="height:30px">
+                    </div>
+
+                    <div class="progress" id ="progress-body">
                     </div>
                 </div>
 
@@ -291,6 +294,8 @@
 
                 $('#process-table').empty();
                 $('#progress-body').empty();
+                $('#progress-time').empty();
+
                 for (let i = 1; i <= cntProcess; ++i) {
                     $('#process-table').append(`
                         <tr>
@@ -316,6 +321,32 @@
                 }
                 console.log(pStates);
                 // 프로세서상태 pStates[ [processIdx, timeStart, timeStay], ... ]
+
+                for (let i = 0; i < pStates.length; ++i) {
+                    let pIdx = pStates[i][0];
+                    let timeStay = pStates[i][2];
+                    let width = ( timeStay / sum) * 100;  // %
+                    if (pIdx === null || pIdx === undefined) {
+                        $('#progress-time').append(`
+                        <div class="progress-bar progress-bar-blank" id="progress-time"
+                            style="width: ${width}%;">
+                            <span class="content">
+                            </span>
+                        </div>
+                        `);
+                    }
+                    else {
+                        $('#progress-time').append(`
+                        <div class="progress-bar progress-bar-blank" id="progress-time"
+                            style="width: ${width}%; color: black;">
+                            <span class="content">
+                                <h5 align=left>${arrivals[pIdx]}</h5>
+                            </span>
+                        </div>
+                    `);
+                    }
+                }
+
                 for (let i = 0; i < pStates.length; ++i) {
                     let pIdx = pStates[i][0];
                     let timeStay = pStates[i][2];
