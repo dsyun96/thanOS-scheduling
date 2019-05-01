@@ -47,6 +47,7 @@ function SRTN(cntProcess, arrivals, bursts) {
     let processes = getProcesses(cntProcess, arrivals, bursts);
     let waitings = [null], turnArounds = [null], pStates = [];
     let time = 0;
+    arrivals = Array.from(arrivals);
     
     arrivals.shift();
     arrivals = Array.from(new Set(arrivals));
