@@ -331,14 +331,26 @@
                         `);
                     }
                     else {
-                        $('#progress-body').append(`
+                        if(technique=='FCFS'||technique=='SPN'||technique=='HRRN') {
+                            $('#progress-body').append(`
+                        <div class="progress-bar progress-bar-striped active"
+                            style="width: ${width}%; background-color: ${colors[pIdx]}">
+                            <span class="content">
+                                <h5>P${pIdx}</h5>${timeStay}초
+                            </span>
+                        </div>
+                            `);
+                        }
+                        else if(technique=='RR'||technique=='SRTN') {
+                            $('#progress-body').append(`
                         <div class="progress-bar progress-bar-striped active"
                             style="width: ${width}%; background-color: ${colors[pIdx]}">
                             <span class="content">
                                 <h5>P${pIdx}</h5>${timeStay}초 <span class="lightgray">/ ${bursts[pIdx]}초</span>
                             </span>
                         </div>
-                    `);
+                            `);
+                        }
                     }
                 }
             }  // end of run()
