@@ -323,15 +323,18 @@
                 // 프로세서상태 pStates[ [processIdx, timeStart, timeStay], ... ]
 
                 //도착 시간을 표시해주는 bar
+                let ArriveTime = 0;
                 for (let i = 0; i < pStates.length; ++i) {
                     let pIdx = pStates[i][0];
                     let timeStay = pStates[i][2];
                     let width = ( timeStay / sum) * 100;  // %
+
                     if (pIdx === null || pIdx === undefined) {
                         $('#progress-time').append(`
                         <div class="progress-bar progress-bar-blank" id="progress-time"
-                            style="width: ${width}%;">
+                            style="width: ${width}%; color: black;">
                             <span class="content">
+                                <h5 align=left>${ArriveTime}</h5>
                             </span>
                         </div>
                         `);
@@ -341,11 +344,12 @@
                         <div class="progress-bar progress-bar-blank" id="progress-time"
                             style="width: ${width}%; color: black;">
                             <span class="content">
-                                <h5 align=left>${arrivals[pIdx]}</h5>
+                                <h5 align=left>${ArriveTime}</h5>
                             </span>
                         </div>
                     `);
                     }
+                    ArriveTime += timeStay;
                 }
 
                 for (let i = 0; i < pStates.length; ++i) {
