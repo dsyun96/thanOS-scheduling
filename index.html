@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ko">
 
 <head>
@@ -116,8 +116,11 @@
                     <h2 id="out-title">안녕하살법</h2>
 
                     <h3>프로세서</h3>
-                    <div class="progress" id ="progress-body" style="height:50px">
 
+                    <div class="progress" id ="progress-time" style="height:30px">
+                    </div>
+
+                    <div class="progress" id ="progress-body">
                     </div>
                 </div>
 
@@ -256,7 +259,7 @@
                         //[waitings, turnArounds, pStates] = SPN(cntProcess, arrivals, bursts);
                         break;
                     case 'SRTN':
-                        //[waitings, turnArounds, pStates] = SRTN(cntProcess, arrivals, bursts);
+                        [waitings, turnArounds, pStates] = SRTN(cntProcess, arrivals, bursts);
                         break;
                     case 'HRRN':
                         //[waitings, turnArounds, pStates] = HRRN(cntProcess, arrivals, bursts);
@@ -269,7 +272,7 @@
                 // TODO: 함수 실행 끝 / 출력 시작
 
                 // 배경 전환
-                $('body').css('background-image', 'url(https://www.pixel4k.com/wp-content/uploads/2018/11/thanos-4k_1543619966.jpg)');
+                $('body').css('background-image', 'URL(https://ifh.cc/g/jkILS.png');
                 $('body').css('background-size', '2500px 1500px');
                 $('body').css('background-position', 'center');
 
@@ -287,10 +290,12 @@
                         `);
                 }
 
-                // 테이블
+                // 테이블, 시간 바, 간트 바 초기화
 
                 $('#process-table').empty();
                 $('#progress-body').empty();
+                $('#progress-time').empty();
+
                 for (let i = 1; i <= cntProcess; ++i) {
                     $('#process-table').append(`
                         <tr>
@@ -309,24 +314,80 @@
                 let colors = [null];
                 setColors(colors, cntProcess);  // funcs.js
 
-                let sum = Math.min.apply(null, arrivals.slice(1));
+                let sum = 0;
                 console.log(sum);
-                for (let i = 1; i <= cntProcess; ++i) {
-                    sum += bursts[i];
+                 for (let i = 0; i < pStates.length ; ++i) {
+                    sum += pStates[i][2];
                 }
                 console.log(pStates);
                 // 프로세서상태 pStates[ [processIdx, timeStart, timeStay], ... ]
+
+                //도착 시간을 표시해주는 bar
+                let ArriveTime = 0;
                 for (let i = 0; i < pStates.length; ++i) {
                     let pIdx = pStates[i][0];
-                    let width = ( bursts[pIdx] / sum) * 100;  // %
-                    $('#progress-body').append(`
-                        <div class="progress-bar progress-bar-striped active"
-                            style="width: ${width}%; background-color: ${colors[pIdx]}">
+                    let timeStay = pStates[i][2];
+                    let width = ( timeStay / sum) * 100;  // %
+
+                    if (pIdx === null || pIdx === undefined) {
+                        $('#progress-time').append(`
+                        <div class="progress-bar progress-bar-blank" id="progress-time"
+                            style="width: ${width}%; color: black;">
                             <span class="content">
-                                <h5>P${pIdx}</h5>${bursts[pIdx]} <span class="lightgray">/ ${bursts[pIdx]}</span>
+                                <h5 align=left>${ArriveTime}</h5>
+                            </span>
+                        </div>
+                        `);
+                    }
+                    else {
+                        $('#progress-time').append(`
+                        <div class="progress-bar progress-bar-blank" id="progress-time"
+                            style="width: ${width}%; color: black;">
+                            <span class="content">
+                                <h5 align=left>${ArriveTime}</h5>
                             </span>
                         </div>
                     `);
+                    }
+                    ArriveTime += timeStay;
+                }
+
+                for (let i = 0; i < pStates.length; ++i) {
+                    let pIdx = pStates[i][0];
+                    let timeStay = pStates[i][2];
+                    let width = ( timeStay / sum) * 100;  // %
+                    if (pIdx === null || pIdx === undefined) {
+                        $('#progress-body').append(`
+                        <div class="progress-bar progress-bar-blank progress-bar-striped active"
+                            style="width: ${width}%; background-color: ${colors[pIdx]}">
+                            <span class="content">
+                                <h5>Idle</h5>${timeStay}초
+                            </span>
+                        </div>
+                        `);
+                    }
+                    else {
+                        if(technique=='FCFS'||technique=='SPN'||technique=='HRRN') {
+                            $('#progress-body').append(`
+                        <div class="progress-bar progress-bar-striped active"
+                            style="width: ${width}%; background-color: ${colors[pIdx]}">
+                            <span class="content">
+                                <h5>P${pIdx}</h5>${timeStay}초
+                            </span>
+                        </div>
+                            `);
+                        }
+                        else if(technique=='RR'||technique=='SRTN') {
+                            $('#progress-body').append(`
+                        <div class="progress-bar progress-bar-striped active"
+                            style="width: ${width}%; background-color: ${colors[pIdx]}">
+                            <span class="content">
+                                <h5>P${pIdx}</h5>${timeStay}초 <span class="lightgray">/ ${bursts[pIdx]}초</span>
+                            </span>
+                        </div>
+                            `);
+                        }
+                    }
                 }
             }  // end of run()
 

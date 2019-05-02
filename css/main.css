@@ -24,6 +24,12 @@ div.panel-default{
     background-color: rgba( 255, 255, 255, 0.8 );
 }
 
+div#progress-time{
+    background-color: rgba( 255, 255, 255, 0 );
+    margin-bottom: 3px;
+    box-shadow: none;
+}
+
 h1, h2, h3, h4 {
     text-align: center;
     color: var(--main-color-darker);

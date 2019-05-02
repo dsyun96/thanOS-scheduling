@@ -1,4 +1,4 @@
-/*
+﻿/*
 입력:
 프로세스개수 n
 도착시간배열 arrivals[2, 5, ...]
@@ -17,12 +17,6 @@ function getProcesses(cntProcess, arrivals, bursts) {
     return processes;
 }
 
-
-/****************************************************
- *
- *  FCFS (dsyun96)
- *
- ***************************************************/
 function FCFS(cntProcess, arrivals, bursts) {
     let processes = getProcesses(cntProcess, arrivals, bursts);
     processes.sort((a, b) => a.arrival - b.arrival ? a.arrival - b.arrival : a.pid - b.pid);
@@ -49,45 +43,6 @@ function FCFS(cntProcess, arrivals, bursts) {
     return [waitings, turnArounds, pStates];
 }
 
-
-/****************************************************
- *
- *  SPN (gjbr5)
- *
- ***************************************************/
-function SPN(cntProcess, arrivals, bursts) {
-    let processes = GetProcesses(cntProcess, arrivals, bursts);
-    processes.sort(function (a, b) {
-        let diff = a.arrival - b.arrival;
-        if (diff)
-            return diff;
-        diff = a.burst - b.burst;
-        if (diff)
-            return diff;
-        return a.pid - b.pid;
-    });
-
-    let waitings = [null], turnArounds = [null], pStates = [];
-    let time = 0;
-    processes.forEach(function (now) {
-        if (time < now.arrival) {
-            pStates.push([null, time, now.arrival - time]);
-            time = now.arrival;
-        }
-        turnArounds[now.pid] = time + now.burst - now.arrival;
-        waitings[now.pid] = turnArounds[now.pid] - bursts[now.pid];
-        pStates.push([now.pid, time, now.burst]);
-        time += now.burst;
-    });
-    return [waitings, turnArounds, pStates];
-}
-
-
-/****************************************************
- *
- *  SRTN (dsyun96)
- *
- ***************************************************/
 function SRTN(cntProcess, arrivals, bursts) {
     let processes = getProcesses(cntProcess, arrivals, bursts);
     let waitings = [null], turnArounds = [null], pStates = [];
@@ -147,55 +102,6 @@ function SRTN(cntProcess, arrivals, bursts) {
     }
 
     pStates = tmp;
-    
-    return [waitings, turnArounds, pStates];
-}
-
-
-/****************************************************
- *
- *  HRRN (dsyun96)
- *
- ***************************************************/
-function HRRN(cntProcess, arrivals, bursts) {
-    let processes = getProcesses(cntProcess, arrivals, bursts);
-    let waitings = [null], turnArounds = [null], pStates = [];
-    let time = 0;
-    
-    while (1) {
-        let readyQ = [], fastTime = Infinity;
-        for (let i = 0; i < cntProcess; ++i) if (processes[i].burst > 0) {
-            fastTime = Math.min(fastTime, processes[i].arrival);
-            if (processes[i].arrival <= time) readyQ.push(i);
-        }
-
-        if (fastTime === Infinity) break;
-
-        if (readyQ.length == 0) {
-            pStates.push([null, time, fastTime - time]);
-            time = fastTime;
-        }
-        else {
-            let hrrn = 0, idx = -1;
-            for (let i = 0; i < readyQ.length; ++i) {
-                let now = processes[readyQ[i]];
-                let nowHrrn = (time - now.arrival + now.burst) / now.burst;
-                
-                if (nowHrrn > hrrn) {
-                    hrrn = nowHrrn;
-                    idx = readyQ[i];
-                }
-            }
-
-            let now = processes[idx];
-            pStates.push([now.pid, time, now.burst]);
-            time += now.burst;
-            turnArounds[now.pid] = time - now.arrival;
-            waitings[now.pid] = turnArounds[now.pid] - now.burst;
-
-            now.burst = 0;
-        }
-    }
     
     return [waitings, turnArounds, pStates];
 }
