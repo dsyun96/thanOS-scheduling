@@ -18,9 +18,9 @@ function getProcesses(cntProcess, arrivals, bursts) {
 }
 
 
-/****************************************************
+/***************************************************
  *
- *  FCFS (dsyun96)
+ *  FCFS
  *
  ***************************************************/
 function FCFS(cntProcess, arrivals, bursts) {
@@ -50,42 +50,58 @@ function FCFS(cntProcess, arrivals, bursts) {
 }
 
 
-/****************************************************
+/***************************************************
  *
- *  SPN (gjbr5)
+ *  SPN
  *
  ***************************************************/
 function SPN(cntProcess, arrivals, bursts) {
-    let processes = GetProcesses(cntProcess, arrivals, bursts);
-    processes.sort(function (a, b) {
-        let diff = a.arrival - b.arrival;
-        if (diff)
-            return diff;
-        diff = a.burst - b.burst;
-        if (diff)
-            return diff;
-        return a.pid - b.pid;
-    });
-
+    let processes = getProcesses(cntProcess, arrivals, bursts);
     let waitings = [null], turnArounds = [null], pStates = [];
     let time = 0;
-    processes.forEach(function (now) {
-        if (time < now.arrival) {
-            pStates.push([null, time, now.arrival - time]);
-            time = now.arrival;
+
+    while (1) {
+        let readyQ = [], fastTime = Infinity;
+        for (let i = 0; i < cntProcess; ++i) if (processes[i].burst > 0) {
+            fastTime = Math.min(fastTime, processes[i].arrival);
+            if (processes[i].arrival <= time) readyQ.push(i);
         }
-        turnArounds[now.pid] = time + now.burst - now.arrival;
-        waitings[now.pid] = turnArounds[now.pid] - bursts[now.pid];
-        pStates.push([now.pid, time, now.burst]);
-        time += now.burst;
-    });
+
+        if (fastTime === Infinity) break;
+
+        if (readyQ.length == 0) {
+            pStates.push([null, time, fastTime - time]);
+            time = fastTime;
+        }
+        else {
+            let len = Infinity, idx = -1;
+            for (let i = 0; i < readyQ.length; ++i) {
+                let now = processes[readyQ[i]];
+                let nowLen = now.burst;
+
+                if (len > nowLen) {
+                    len = nowLen;
+                    idx = readyQ[i];
+                }
+            }
+
+            let now = processes[idx];
+            pStates.push([now.pid, time, now.burst]);
+            time += now.burst;
+            turnArounds[now.pid] = time - now.arrival;
+            waitings[now.pid] = turnArounds[now.pid] - now.burst;
+
+            now.burst = 0;
+        }
+    }
+
     return [waitings, turnArounds, pStates];
 }
 
 
-/****************************************************
+/***************************************************
  *
- *  SRTN (dsyun96)
+ *  SRTN
  *
  ***************************************************/
 function SRTN(cntProcess, arrivals, bursts) {
@@ -106,7 +122,7 @@ function SRTN(cntProcess, arrivals, bursts) {
         let nextTime = arrivals[i + 1];
 
         for (let j = 0; j < cntProcess; ++j)
-            if (processes[j].arrival <= eventTime && processes[j].burst > 0) readyQ.push(j);
+        if (processes[j].arrival <= eventTime && processes[j].burst > 0) readyQ.push(j);
 
         // 지금부터 다음 이벤트가 발생하기 전까지는 burst 가장 짧은 놈을 계속 돌린다
         while (time < nextTime) {
@@ -152,9 +168,9 @@ function SRTN(cntProcess, arrivals, bursts) {
 }
 
 
-/****************************************************
+/***************************************************
  *
- *  HRRN (dsyun96)
+ *  HRRN
  *
  ***************************************************/
 function HRRN(cntProcess, arrivals, bursts) {
