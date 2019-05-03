@@ -1,4 +1,4 @@
-﻿/*
+/*
 입력:
 프로세스개수 n
 도착시간배열 arrivals[2, 5, ...]
@@ -26,7 +26,7 @@ function getProcesses(cntProcess, arrivals, bursts) {
 function FCFS(cntProcess, arrivals, bursts) {
     let processes = getProcesses(cntProcess, arrivals, bursts);
     processes.sort((a, b) => a.arrival - b.arrival ? a.arrival - b.arrival : a.pid - b.pid);
-    
+
     let waitings = [null], turnArounds = [null], pStates = [];
     let time = 0;
 
@@ -93,28 +93,28 @@ function SRTN(cntProcess, arrivals, bursts) {
     let waitings = [null], turnArounds = [null], pStates = [];
     let time = 0;
     arrivals = Array.from(arrivals);
-    
+
     arrivals.shift();
     arrivals = Array.from(new Set(arrivals));
     arrivals.push(Infinity);
     arrivals.sort((a, b) => a - b);
-    
+
     for (let i = 0; i < arrivals.length - 1; ++i) {
         // eventTime = 이벤트가 발생한 시간
         let eventTime = arrivals[i];
         let readyQ = [];
         let nextTime = arrivals[i + 1];
-        
+
         for (let j = 0; j < cntProcess; ++j)
             if (processes[j].arrival <= eventTime && processes[j].burst > 0) readyQ.push(j);
-        
+
         // 지금부터 다음 이벤트가 발생하기 전까지는 burst 가장 짧은 놈을 계속 돌린다
         while (time < nextTime) {
             if (time < eventTime) {
                 pStates.push([null, time, eventTime - time]);
                 time = eventTime;
             }
-            
+
             let idx = -1, max = Infinity;
             for (let j = 0; j < readyQ.length; ++j) {
                 let now = processes[readyQ[j]];
@@ -125,7 +125,7 @@ function SRTN(cntProcess, arrivals, bursts) {
             }
 
             if (idx === -1) break;
-            
+
             // idx번째가 가장 짧은 놈
             let exec = Math.min(nextTime - time, processes[idx].burst);
             pStates.push([processes[idx].pid, time, exec]);
@@ -147,7 +147,7 @@ function SRTN(cntProcess, arrivals, bursts) {
     }
 
     pStates = tmp;
-    
+
     return [waitings, turnArounds, pStates];
 }
 
@@ -161,7 +161,7 @@ function HRRN(cntProcess, arrivals, bursts) {
     let processes = getProcesses(cntProcess, arrivals, bursts);
     let waitings = [null], turnArounds = [null], pStates = [];
     let time = 0;
-    
+
     while (1) {
         let readyQ = [], fastTime = Infinity;
         for (let i = 0; i < cntProcess; ++i) if (processes[i].burst > 0) {
@@ -180,7 +180,7 @@ function HRRN(cntProcess, arrivals, bursts) {
             for (let i = 0; i < readyQ.length; ++i) {
                 let now = processes[readyQ[i]];
                 let nowHrrn = (time - now.arrival + now.burst) / now.burst;
-                
+
                 if (nowHrrn > hrrn) {
                     hrrn = nowHrrn;
                     idx = readyQ[i];
@@ -196,6 +196,6 @@ function HRRN(cntProcess, arrivals, bursts) {
             now.burst = 0;
         }
     }
-    
+
     return [waitings, turnArounds, pStates];
 }
