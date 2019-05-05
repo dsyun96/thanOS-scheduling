@@ -51,10 +51,10 @@ function FCFS(cntProcess, arrivals, bursts) {
 /***************************************************
  * 
  * RR
- * @param tqu Time QUantum
+ * @param delta : Time Quantum
  * 
  ***************************************************/
-function RR(cntProcess, arrivals, bursts, tqu) {
+function RR(cntProcess, arrivals, bursts, delta) {
     let processes = getProcesses(cntProcess, arrivals, bursts);
     //remain : 남은 시간
     processes = processes.map(p => {
@@ -71,16 +71,16 @@ function RR(cntProcess, arrivals, bursts, tqu) {
         let preemption = false;  //끝내고 나온 프로세스가 있는지 검사
         if (readyQ.length) {
             let now = readyQ[0];
-            if (now.remain <= tqu) {  //프로세스 종료
+            if (now.remain <= delta) {  //프로세스 종료
                 pStates.push([now.pid, time, now.remain]);
                 time += now.remain;
                 turnArounds[now.pid] = time - now.arrival;
                 waitings[now.pid] = turnArounds[now.pid] - now.burst;
                 readyQ.shift();
             } else {  //프로세스 지속
-                pStates.push([now.pid, time, tqu]);
-                time += tqu;
-                now.remain -= tqu;
+                pStates.push([now.pid, time, delta]);
+                time += delta;
+                now.remain -= delta;
                 preemption = true;
             }
         } else if (processes[0].arrival > time) {  //CPU Idle
