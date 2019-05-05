@@ -17,7 +17,6 @@ body {
     background-image: url("https://pbs.twimg.com/media/DaREn_JXkAASjQL.jpg");
     background-repeat: no-repeat;
     background-position: left;
-
 }
 
 div.panel-default{
@@ -88,6 +87,16 @@ abbr {
     color: darkgray;
 }
 
+.progress .progress-bar{
+    -webkit-animation: 2s linear 0s normal none infinite running progress-bar-stripes,animate-positive 1s;
+    animation: 2s linear 0s normal none infinite running progress-bar-stripes,animate-positive 1s;
+}
+@-webkit-keyframes animate-positive{
+    0%{ width: 0; }
+}
+@keyframes animate-positive{
+    0%{ width: 0; }
+}
 .row [class*='col-'] {
     transition: all 0.5s ease-in-out;
 }

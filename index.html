@@ -142,17 +142,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <h3>프로세스 4</h3>
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-danger progress-bar-striped active" role="progressbar" style="width: 55%">
-                            55%
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -318,15 +307,17 @@
                     sum += pStates[i][2];
                 }
 
-                //도착 시간을 표시해주는 bar
                 let ArriveTime = 0;
-                for (let i = 0; i < pStates.length; ++i) {
-                    let pIdx = pStates[i][0];
-                    let timeStay = pStates[i][2];
-                    let width = ( timeStay / sum) * 100;  // %
+                for (let i = 0; i < pStates.length ; ++i) {
+                    (function(i) {
+                        setTimeout(function () {
+                                //도착 시간을 표시해주는 bar
+                                let pIdx = pStates[i][0];
+                                let timeStay = pStates[i][2];
+                                let width = (timeStay / sum) * 100;  // %
 
-                    if (pIdx === null || pIdx === undefined) {
-                        $('#progress-time').append(`
+                                if (pIdx === null || pIdx === undefined) {
+                                    $('#progress-time').append(`
                         <div class="progress-bar progress-bar-blank" id="progress-time"
                             style="width: ${width}%; color: black;">
                             <span class="content">
@@ -334,9 +325,8 @@
                             </span>
                         </div>
                         `);
-                    }
-                    else {
-                        $('#progress-time').append(`
+                                } else {
+                                    $('#progress-time').append(`
                         <div class="progress-bar progress-bar-blank" id="progress-time"
                             style="width: ${width}%; color: black;">
                             <span class="content">
@@ -344,47 +334,43 @@
                             </span>
                         </div>
                     `);
-                    }
-                    ArriveTime += timeStay;
-                }
+                                }
+                                ArriveTime += timeStay;
 
-                for (let i = 0; i < pStates.length; ++i) {
-                    // 프로세서상태 pStates[ [processIdx, timeStart, timeStay], ... ]
-                    let pIdx = pStates[i][0];
-                    let timeStay = pStates[i][2];
-                    let width = ( timeStay / sum) * 100;  // %
-                    if (pIdx === null || pIdx === undefined) {
-                        $('#progress-body').append(`
+                                // 프로세서상태 pStates[ [processIdx, timeStart, timeStay], ... ]
+                                // 프로세스 진행 bar
+                                if (pIdx === null || pIdx === undefined) {
+                                    $('#progress-body').append(`
                         <div class="progress-bar progress-bar-blank progress-bar-striped active"
-                            style="width: ${width}%; background-color: ${colors[pIdx]}">
+                            style ="width : ${width}%; background-color: ${colors[pIdx]};">
                             <span class="content">
                                 <h5>Idle</h5>${timeStay}초
                             </span>
                         </div>
                         `);
-                    }
-                    else {
-                        if(technique=='FCFS'||technique=='SPN'||technique=='HRRN') {
-                            $('#progress-body').append(`
+                                } else {
+                                    if (technique == 'FCFS' || technique == 'SPN' || technique == 'HRRN') {
+                                        $('#progress-body').append(`
                         <div class="progress-bar progress-bar-striped active"
-                            style="width: ${width}%; background-color: ${colors[pIdx]}">
+                            style ="width : ${width}%; background-color: ${colors[pIdx]};">
                             <span class="content">
                                 <h5>P${pIdx}</h5>${timeStay}초
                             </span>
                         </div>
                             `);
-                        }
-                        else if(technique=='RR'||technique=='SRTN') {
-                            $('#progress-body').append(`
+                                    } else if (technique == 'RR' || technique == 'SRTN') {
+                                        $('#progress-body').append(`
                         <div class="progress-bar progress-bar-striped active"
-                            style="width: ${width}%; background-color: ${colors[pIdx]}">
+                             style ="width : ${width}%; background-color: ${colors[pIdx]};">
                             <span class="content">
                                 <h5>P${pIdx}</h5>${timeStay}초 <span class="lightgray">/ ${bursts[pIdx]}초</span>
                             </span>
                         </div>
                             `);
-                        }
-                    }
+                                    }
+                                }
+                        }, 1000*i);
+                    }(i));
                 }
             }  // end of run()
 
