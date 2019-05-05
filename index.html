@@ -103,7 +103,7 @@
 
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <button type="submit" class="big btn btn-primary btn-block" id="run"><span class="glyphicon glyphicon-play"></span> 실행</button>
+                        <button type="submit" class="big btn btn-primary btn-block" id="btn-run"><span class="glyphicon glyphicon-play"></span> 실행</button>
                     </div>
                 </div>
             </form>
@@ -117,11 +117,9 @@
 
                     <h3>프로세서</h3>
 
-                    <div class="progress" id ="progress-time" style="height:30px">
-                    </div>
+                    <div class="progress" id ="progress-time" style="height: auto;"></div>
 
-                    <div class="progress" id ="progress-body">
-                    </div>
+                    <div class="progress" id ="progress-body"></div>
                 </div>
 
                 <table class="table table-bordered table-hover">
@@ -133,14 +131,7 @@
             </div>
 
             <div class="panel panel-default">
-                <div class="panel-body">
-                    <h3>프로세스 1</h3>
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" style="width: 15%">
-                            15%
-                        </div>
-                    </div>
-                </div>
+                <div class="panel-body" id="panel-process"></div>
             </div>
         </div>
     </div>
@@ -153,7 +144,7 @@
 
             let isRR = false;
             let cntProcess = 1;
-
+            let isRunning = false;
 
             // 프로세스 기법 라디오 버튼 이벤트
             $('input[type=radio][name=technique]').change(() => {
@@ -207,7 +198,7 @@
                 `);
             });
 
-            // 실행  버튼 이벤트
+            // TODO: 실행  버튼 이벤트
             function run() {
                 let technique = $('input[type=radio][name=technique]:checked').val();
                 let delta = null;
@@ -221,7 +212,12 @@
 
                 // TODO: 입력 값 유효성 검사
 
-                if (technique) {
+                if (isRunning) {
+                    alert('이미 실행 중이에요.');
+                    $('#btn-run').prop('disabled', true);
+                    return;
+                }
+                else if (technique) {
                     $('.col-input').removeClass('col-md-offset-3');
                     setTimeout(() => {
                         document.getElementById('out-form').style.opacity = '1';
@@ -230,13 +226,18 @@
                 else {
                     alert('프로세스 기법을 선택하세요.');
                     technique.focus();
+                    return;
                 }
 
                 // TODO: 유효성 검사 끝 / 함수 실행
 
+                isRunning = true;
+                $('#btn-run').prop('disabled', true);
+
                 let waitings = [];
                 let turnArounds = [];
                 let pStates = [];
+
                 switch (technique) {
                     case 'FCFS':
                         [waitings, turnArounds, pStates] = FCFS(cntProcess, arrivals, bursts);
@@ -274,8 +275,8 @@
                 }
                 else {
                     $('#out-title').html(`
-                            ${technique}
-                        `);
+                        ${technique}
+                    `);
                 }
 
                 // 테이블, 시간 바, 간트 바 초기화
@@ -283,7 +284,9 @@
                 $('#process-table').empty();
                 $('#progress-body').empty();
                 $('#progress-time').empty();
+                $('#panel-process').empty();
 
+                // 테이블 출력
                 for (let i = 1; i <= cntProcess; ++i) {
                     $('#process-table').append(`
                         <tr>
@@ -292,8 +295,18 @@
                             <td>${bursts[i]}</td>
                             <td>${waitings[i]}</td>
                             <td>${turnArounds[i]}</td>
-                            <td>${(turnArounds[i]/bursts[i]).toFixed(1)}</td>
+                            <td>${(turnArounds[i]/bursts[i]).toFixed(2)}</td>
                         </tr>
+                    `);
+
+                    // 프로세스 진행 바 생성
+                    $('#panel-process').append(`
+                        <span>P${i}</span>
+                        <div class="progress progress-slim">
+                            <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" style="width: 15%">
+                                15%
+                            </div>
+                        </div>
                     `);
                 }
 
@@ -303,75 +316,81 @@
                 setColors(colors, cntProcess);  // funcs.js
 
                 let sum = 0;
-                 for (let i = 0; i < pStates.length ; ++i) {
+                 for (let i = 0; i < pStates.length; ++i) {
                     sum += pStates[i][2];
                 }
 
-                let ArriveTime = 0;
-                for (let i = 0; i < pStates.length ; ++i) {
+                let timeArrive = 0;
+                for (let i = 0; i < pStates.length; ++i) {
                     (function(i) {
-                        setTimeout(function () {
-                                //도착 시간을 표시해주는 bar
-                                let pIdx = pStates[i][0];
-                                let timeStay = pStates[i][2];
-                                let width = (timeStay / sum) * 100;  // %
+                        setTimeout(() => {
+                            let pIdx = pStates[i][0];
+                            let timeStay = pStates[i][2];
+                            let width = (timeStay / sum) * 100;  // %
 
-                                if (pIdx === null || pIdx === undefined) {
-                                    $('#progress-time').append(`
-                        <div class="progress-bar progress-bar-blank" id="progress-time"
-                            style="width: ${width}%; color: black;">
-                            <span class="content">
-                                <h5 align=left>${ArriveTime}</h5>
-                            </span>
-                        </div>
-                        `);
-                                } else {
-                                    $('#progress-time').append(`
-                        <div class="progress-bar progress-bar-blank" id="progress-time"
-                            style="width: ${width}%; color: black;">
-                            <span class="content">
-                                <h5 align=left>${ArriveTime}</h5>
-                            </span>
-                        </div>
-                    `);
-                                }
-                                ArriveTime += timeStay;
+                            // 도착 시간 표시 바
+                            if (pIdx === null || pIdx === undefined)
+                            {
+                                $('#progress-time').append(`
+                                    <div class="progress-bar progress-bar-blank" id="progress-time"
+                                        style="width: ${width}%; color: black;">
+                                        <span class="content">
+                                            <h5 align=left>${timeArrive}</h5>
+                                        </span>
+                                    </div>
+                                `);
+                            } else {
+                                $('#progress-time').append(`
+                                    <div class="progress-bar progress-bar-blank" id="progress-time"
+                                        style="width: ${width}%; color: black;">
+                                        <span class="content">
+                                            <h5 align=left>${timeArrive}</h5>
+                                        </span>
+                                    </div>
+                `               );
+                            }
 
-                                // 프로세서상태 pStates[ [processIdx, timeStart, timeStay], ... ]
-                                // 프로세스 진행 bar
-                                if (pIdx === null || pIdx === undefined) {
+                            timeArrive += timeStay;
+
+                            // 프로세서 진행 바
+                            if (pIdx === null || pIdx === undefined) {
+                                $('#progress-body').append(`
+                                    <div class="progress-bar progress-bar-blank progress-bar-striped active"
+                                        style ="width : ${width}%; background-color: ${colors[pIdx]};">
+                                        <span class="content">
+                                            <h5>Idle</h5>${timeStay}초
+                                        </span>
+                                    </div>
+                                `);
+                            } else {
+                                if (technique == 'FCFS' || technique == 'SPN' || technique == 'HRRN') {
                                     $('#progress-body').append(`
-                        <div class="progress-bar progress-bar-blank progress-bar-striped active"
-                            style ="width : ${width}%; background-color: ${colors[pIdx]};">
-                            <span class="content">
-                                <h5>Idle</h5>${timeStay}초
-                            </span>
-                        </div>
-                        `);
-                                } else {
-                                    if (technique == 'FCFS' || technique == 'SPN' || technique == 'HRRN') {
-                                        $('#progress-body').append(`
-                        <div class="progress-bar progress-bar-striped active"
-                            style ="width : ${width}%; background-color: ${colors[pIdx]};">
-                            <span class="content">
-                                <h5>P${pIdx}</h5>${bursts[pIdx]}초
-                            </span>
-                        </div>
-                            `);
-                                    } else if (technique == 'RR' || technique == 'SRTN') {
-                                        $('#progress-body').append(`
-                        <div class="progress-bar progress-bar-striped active"
-                             style ="width : ${width}%; background-color: ${colors[pIdx]};">
-                            <span class="content">
-                                <h5>P${pIdx}</h5>${timeStay}초 <span class="lightgray">/ ${bursts[pIdx]}초</span>
-                            </span>
-                        </div>
-                            `);
-                                    }
+                                        <div class="progress-bar progress-bar-striped active"
+                                            style ="width : ${width}%; background-color: ${colors[pIdx]};">
+                                            <span class="content">
+                                                <h5>P${pIdx}</h5>${bursts[pIdx]}초
+                                            </span>
+                                        </div>
+                                    `);
+                                } else if (technique == 'RR' || technique == 'SRTN') {
+                                    $('#progress-body').append(`
+                                        <div class="progress-bar progress-bar-striped active"
+                                             style ="width : ${width}%; background-color: ${colors[pIdx]};">
+                                            <span class="content">
+                                                <h5>P${pIdx}</h5>${timeStay}초 <span class="lightgray">/ ${bursts[pIdx]}초</span>
+                                            </span>
+                                        </div>
+                                    `);
                                 }
-                        }, 1000*i);
-                    }(i));
+                            }
+                        }, 1000 * i);  // 딜레이
+                    }(i));  // 무명 함수 인자
                 }
+
+                setTimeout(() => {
+                    isRunning = false;
+                    $('#btn-run').prop('disabled', false);
+                }, 1000 * pStates.length);
             }  // end of run()
 
             $(document).on('submit', '.form', function(e) {

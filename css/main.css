@@ -81,6 +81,9 @@ abbr {
 .progress {
     height: 50px;
 }
+.progress-slim {
+    height: 20px !important;
+}
 
 .progress-bar-blank {
     background: transparent;
