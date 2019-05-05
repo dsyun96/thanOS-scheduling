@@ -12,11 +12,10 @@
 function getProcesses(cntProcess, arrivals, bursts) {
     let processes = [];
     for (let i = 1; i <= cntProcess; ++i) {
-        processes.push({pid: i, arrival: arrivals[i], burst: bursts[i]});
+        processes.push({ pid: i, arrival: arrivals[i], burst: bursts[i] });
     }
     return processes;
 }
-
 
 /***************************************************
  *
@@ -49,6 +48,55 @@ function FCFS(cntProcess, arrivals, bursts) {
     return [waitings, turnArounds, pStates];
 }
 
+/***************************************************
+ * 
+ * RR
+ * @param tqu Time QUantum
+ * 
+ ***************************************************/
+function RR(cntProcess, arrivals, bursts, tqu) {
+    let processes = getProcesses(cntProcess, arrivals, bursts);
+    //remain : 남은 시간
+    processes = processes.map(p => {
+        return { pid: p.pid, arrival: p.arrival, burst: p.burst, remain: p.burst };
+    });
+    //도착시간 기준 정렬
+    processes.sort((a, b) => a.arrival - b.arrival ? a.arrival - b.arrival : a.pid - b.pid);
+
+    let time = 0;
+    let waitings = [null], turnArounds = [null], pStates = [];
+    let readyQ = [];
+
+    while (processes.length || readyQ.length) {
+        let preemption = false;  //끝내고 나온 프로세스가 있는지 검사
+        if (readyQ.length) {
+            let now = readyQ[0];
+            if (now.remain <= tqu) {  //프로세스 종료
+                pStates.push([now.pid, time, now.remain]);
+                time += now.remain;
+                turnArounds[now.pid] = time - now.arrival;
+                waitings[now.pid] = turnArounds[now.pid] - now.burst;
+                readyQ.shift();
+            } else {  //프로세스 지속
+                pStates.push([now.pid, time, tqu]);
+                time += tqu;
+                now.remain -= tqu;
+                preemption = true;
+            }
+        } else if (processes[0].arrival > time) {  //CPU Idle
+            pStates.push([null, time, processes[0].arrival - time]);
+            time = processes[0].arrival;
+        }
+        //프로세스 readyQ에 추가
+        while (processes.length && processes[0].arrival <= time)
+            readyQ.push(processes.shift());
+        if (preemption) {
+            readyQ.push(readyQ.shift());
+            preemption = false;
+        }
+    }
+    return [waitings, turnArounds, pStates];
+}
 
 /***************************************************
  *
@@ -122,7 +170,7 @@ function SRTN(cntProcess, arrivals, bursts) {
         let nextTime = arrivals[i + 1];
 
         for (let j = 0; j < cntProcess; ++j)
-        if (processes[j].arrival <= eventTime && processes[j].burst > 0) readyQ.push(j);
+            if (processes[j].arrival <= eventTime && processes[j].burst > 0) readyQ.push(j);
 
         // 지금부터 다음 이벤트가 발생하기 전까지는 burst 가장 짧은 놈을 계속 돌린다
         while (time < nextTime) {
