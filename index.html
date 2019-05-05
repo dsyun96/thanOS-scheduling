@@ -254,8 +254,7 @@
                         break;
                     case 'RR':
                         // delta 입력 칸은 동적으로 생성됐으니 찾아야 해요
-                        delta = $(document).find('input#delta').val();
-                        console.log('delta: ' + delta);
+                        delta = parseInt($(document).find('input#delta').val());
                         [waitings, turnArounds, pStates] = RR(cntProcess, arrivals, bursts, delta);
                         break;
                     case 'SPN':
@@ -318,8 +317,6 @@
                  for (let i = 0; i < pStates.length ; ++i) {
                     sum += pStates[i][2];
                 }
-                // 프로세서상태 pStates[ [processIdx, timeStart, timeStay], ... ]
-                console.log(pStates);
 
                 //도착 시간을 표시해주는 bar
                 let ArriveTime = 0;
@@ -352,6 +349,7 @@
                 }
 
                 for (let i = 0; i < pStates.length; ++i) {
+                    // 프로세서상태 pStates[ [processIdx, timeStart, timeStay], ... ]
                     let pIdx = pStates[i][0];
                     let timeStay = pStates[i][2];
                     let width = ( timeStay / sum) * 100;  // %

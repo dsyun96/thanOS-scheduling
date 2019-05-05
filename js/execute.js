@@ -50,17 +50,16 @@ function FCFS(cntProcess, arrivals, bursts) {
 
 /***************************************************
  * 
- * RR
- * @param delta : Time Quantum
+ *  RR
  * 
  ***************************************************/
 function RR(cntProcess, arrivals, bursts, delta) {
     let processes = getProcesses(cntProcess, arrivals, bursts);
-    //remain : 남은 시간
+    // remain : 남은 시간
     processes = processes.map(p => {
         return { pid: p.pid, arrival: p.arrival, burst: p.burst, remain: p.burst };
     });
-    //도착시간 기준 정렬
+    // 도착시간 기준 정렬
     processes.sort((a, b) => a.arrival - b.arrival ? a.arrival - b.arrival : a.pid - b.pid);
 
     let time = 0;
@@ -68,26 +67,26 @@ function RR(cntProcess, arrivals, bursts, delta) {
     let readyQ = [];
 
     while (processes.length || readyQ.length) {
-        let preemption = false;  //끝내고 나온 프로세스가 있는지 검사
+        let preemption = false;  // 끝내고 나온 프로세스가 있는지 검사
         if (readyQ.length) {
             let now = readyQ[0];
-            if (now.remain <= delta) {  //프로세스 종료
+            if (now.remain <= delta) {  // 프로세스 종료
                 pStates.push([now.pid, time, now.remain]);
                 time += now.remain;
                 turnArounds[now.pid] = time - now.arrival;
                 waitings[now.pid] = turnArounds[now.pid] - now.burst;
                 readyQ.shift();
-            } else {  //프로세스 지속
+            } else {  // 프로세스 지속
                 pStates.push([now.pid, time, delta]);
                 time += delta;
                 now.remain -= delta;
                 preemption = true;
             }
-        } else if (processes[0].arrival > time) {  //CPU Idle
+        } else if (processes[0].arrival > time) {  // CPU Idle
             pStates.push([null, time, processes[0].arrival - time]);
             time = processes[0].arrival;
         }
-        //프로세스 readyQ에 추가
+        // 프로세스 readyQ에 추가
         while (processes.length && processes[0].arrival <= time)
             readyQ.push(processes.shift());
         if (preemption) {

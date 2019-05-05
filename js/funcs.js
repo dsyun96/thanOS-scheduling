@@ -6,7 +6,6 @@ function getRandomColor() {
     for (let i = 0; i < 6; ++i)
         color += letters[Math.floor(5 + Math.random() * 7)];
 
-    console.log(color);
     return color;
 }
 
