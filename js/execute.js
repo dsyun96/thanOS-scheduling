@@ -12,7 +12,7 @@
 function getProcesses(cntProcess, arrivals, bursts) {
     let processes = [];
     for (let i = 1; i <= cntProcess; ++i) {
-        processes.push({ pid: i, arrival: arrivals[i], burst: bursts[i] });
+        processes.push({pid: i, arrival: arrivals[i], burst: bursts[i]});
     }
     return processes;
 }
@@ -49,15 +49,15 @@ function FCFS(cntProcess, arrivals, bursts) {
 }
 
 /***************************************************
- * 
+ *
  *  RR
- * 
+ *
  ***************************************************/
 function RR(cntProcess, arrivals, bursts, delta) {
     let processes = getProcesses(cntProcess, arrivals, bursts);
     // remain : 남은 시간
     processes = processes.map(p => {
-        return { pid: p.pid, arrival: p.arrival, burst: p.burst, remain: p.burst };
+        return {pid: p.pid, arrival: p.arrival, burst: p.burst, remain: p.burst};
     });
     // 도착시간 기준 정렬
     processes.sort((a, b) => a.arrival - b.arrival ? a.arrival - b.arrival : a.pid - b.pid);
@@ -86,7 +86,7 @@ function RR(cntProcess, arrivals, bursts, delta) {
             pStates.push([null, time, processes[0].arrival - time]);
             time = processes[0].arrival;
         }
-        // 프로세스 readyQ에 추가
+        // readyQ에 프로세스 추가
         while (processes.length && processes[0].arrival <= time)
             readyQ.push(processes.shift());
         if (preemption) {
@@ -94,6 +94,19 @@ function RR(cntProcess, arrivals, bursts, delta) {
             preemption = false;
         }
     }
+
+    // 중복 제거
+    let tmp = [pStates[0]], p = 0;
+    for (let i = 1; i < pStates.length; ++i) {
+        if (tmp[p][0] === pStates[i][0]) {
+            tmp[p][2] += pStates[i][2];
+        } else {
+            tmp.push(pStates[i]);
+            ++p;
+        }
+    }
+    pStates = tmp;
+
     return [waitings, turnArounds, pStates];
 }
 
@@ -107,20 +120,22 @@ function SPN(cntProcess, arrivals, bursts) {
     let waitings = [null], turnArounds = [null], pStates = [];
     let time = 0;
 
-    while (1) {
+    while (true) {
         let readyQ = [], fastTime = Infinity;
-        for (let i = 0; i < cntProcess; ++i) if (processes[i].burst > 0) {
-            fastTime = Math.min(fastTime, processes[i].arrival);
-            if (processes[i].arrival <= time) readyQ.push(i);
+        for (let i = 0; i < cntProcess; ++i) {
+            if (processes[i].burst > 0) {
+                fastTime = Math.min(fastTime, processes[i].arrival);
+                if (processes[i].arrival <= time)
+                    readyQ.push(i);
+            }
         }
 
         if (fastTime === Infinity) break;
 
-        if (readyQ.length == 0) {
+        if (readyQ.length === 0) {
             pStates.push([null, time, fastTime - time]);
             time = fastTime;
-        }
-        else {
+        } else {
             let len = Infinity, idx = -1;
             for (let i = 0; i < readyQ.length; ++i) {
                 let now = processes[readyQ[i]];
@@ -131,17 +146,14 @@ function SPN(cntProcess, arrivals, bursts) {
                     idx = readyQ[i];
                 }
             }
-
             let now = processes[idx];
             pStates.push([now.pid, time, now.burst]);
             time += now.burst;
             turnArounds[now.pid] = time - now.arrival;
             waitings[now.pid] = turnArounds[now.pid] - now.burst;
-
             now.burst = 0;
         }
     }
-
     return [waitings, turnArounds, pStates];
 }
 
@@ -205,12 +217,14 @@ function SRTN(cntProcess, arrivals, bursts) {
 
     let tmp = [pStates[0]], p = 0;
     for (let i = 1; i < pStates.length; ++i) {
-        if (tmp[p][0] === pStates[i][0]) tmp[p][2] += pStates[i][2];
-        else tmp.push(pStates[i]), ++p;
+        if (tmp[p][0] === pStates[i][0]) {
+            tmp[p][2] += pStates[i][2];
+        } else {
+            tmp.push(pStates[i]);
+            ++p;
+        }
     }
-
     pStates = tmp;
-
     return [waitings, turnArounds, pStates];
 }
 
@@ -234,11 +248,10 @@ function HRRN(cntProcess, arrivals, bursts) {
 
         if (fastTime === Infinity) break;
 
-        if (readyQ.length == 0) {
+        if (readyQ.length === 0) {
             pStates.push([null, time, fastTime - time]);
             time = fastTime;
-        }
-        else {
+        } else {
             let hrrn = 0, idx = -1;
             for (let i = 0; i < readyQ.length; ++i) {
                 let now = processes[readyQ[i]];
