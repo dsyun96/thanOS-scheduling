@@ -253,10 +253,12 @@
                         [waitings, turnArounds, pStates] = FCFS(cntProcess, arrivals, bursts);
                         break;
                     case 'RR':
-                        //[waitings, turnArounds, pStates] = RR(cntProcess, arrivals, bursts, delta);
+                        // delta 입력 칸은 동적으로 생성됐으니 찾아야 해요
+                        delta = parseInt($(document).find('input#delta').val());
+                        [waitings, turnArounds, pStates] = RR(cntProcess, arrivals, bursts, delta);
                         break;
                     case 'SPN':
-                        //[waitings, turnArounds, pStates] = SPN(cntProcess, arrivals, bursts);
+                        [waitings, turnArounds, pStates] = SPN(cntProcess, arrivals, bursts);
                         break;
                     case 'SRTN':
                         [waitings, turnArounds, pStates] = SRTN(cntProcess, arrivals, bursts);
@@ -277,9 +279,6 @@
                 $('body').css('background-position', 'center');
 
                 if (technique === 'RR') {
-                    // delta 입력 칸은 동적으로 생성됐으니 찾아야 해요
-                    delta = $(document).find('input#delta').val();
-
                     $('#out-title').html(`
                         ${technique} <span class="maincolor">(δ = ${delta})</span>
                     `);
@@ -309,18 +308,15 @@
                     `);
                 }
 
-                // 프로그레스 바
+                // TODO: 프로그레스 바 출력
 
                 let colors = [null];
                 setColors(colors, cntProcess);  // funcs.js
 
                 let sum = 0;
-                console.log(sum);
                  for (let i = 0; i < pStates.length ; ++i) {
                     sum += pStates[i][2];
                 }
-                console.log(pStates);
-                // 프로세서상태 pStates[ [processIdx, timeStart, timeStay], ... ]
 
                 //도착 시간을 표시해주는 bar
                 let ArriveTime = 0;
@@ -353,6 +349,7 @@
                 }
 
                 for (let i = 0; i < pStates.length; ++i) {
+                    // 프로세서상태 pStates[ [processIdx, timeStart, timeStay], ... ]
                     let pIdx = pStates[i][0];
                     let timeStay = pStates[i][2];
                     let width = ( timeStay / sum) * 100;  // %
