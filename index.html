@@ -267,7 +267,7 @@
                         [waitings, turnArounds, pStates] = HRRN(cntProcess, arrivals, bursts);
                         break;
                     case 'INFINITY GAUNTLET':
-                        //[waitings, turnArounds, pStates] = Gauntlet(cntProcess, arrivals, bursts);
+                        [waitings, turnArounds, pStates] = InfinityGauntlet(cntProcess, arrivals, bursts);
                         break;
                 }
 

@@ -239,12 +239,14 @@ function HRRN(cntProcess, arrivals, bursts) {
     let waitings = [null], turnArounds = [null], pStates = [];
     let time = 0;
 
-    while (1) {
+    while (true) {
         let readyQ = [], fastTime = Infinity;
-        for (let i = 0; i < cntProcess; ++i) if (processes[i].burst > 0) {
-            fastTime = Math.min(fastTime, processes[i].arrival);
-            if (processes[i].arrival <= time) readyQ.push(i);
-        }
+        for (let i = 0; i < cntProcess; ++i)
+            if (processes[i].burst > 0) {
+                fastTime = Math.min(fastTime, processes[i].arrival);
+                if (processes[i].arrival <= time)
+                    readyQ.push(i);
+            }
 
         if (fastTime === Infinity) break;
 
@@ -276,7 +278,7 @@ function HRRN(cntProcess, arrivals, bursts) {
     return [waitings, turnArounds, pStates];
 }
 
-function InfinityGuntlet(cntProcess, arrivals, bursts) {
+function InfinityGauntlet(cntProcess, arrivals, bursts) {
     let processes = getProcesses(cntProcess, arrivals, bursts);
 
     // 랜덤하게 절반 프로세스 삭제
