@@ -333,8 +333,6 @@
                             let width = (timeStay / sum) * 100;  // %
 
                             // 도착 시간 표시 바
-                            if (pIdx === null || pIdx === undefined)
-                            {
                                 $('#progress-time').append(`
                                     <div class="progress-bar progress-bar-blank" id="progress-time"
                                         style="width: ${width}%; color: black;">
@@ -343,16 +341,6 @@
                                         </span>
                                     </div>
                                 `);
-                            } else {
-                                $('#progress-time').append(`
-                                    <div class="progress-bar progress-bar-blank" id="progress-time"
-                                        style="width: ${width}%; color: black;">
-                                        <span class="content">
-                                            <h5 align=left>${timeArrive}</h5>
-                                        </span>
-                                    </div>
-                `               );
-                            }
 
                             timeArrive += timeStay;
 
@@ -360,7 +348,7 @@
                             if (pIdx === null || pIdx === undefined) {
                                 $('#progress-body').append(`
                                     <div class="progress-bar progress-bar-blank progress-bar-striped active"
-                                        style ="width : ${width}%; background-color: ${colors[pIdx]};">
+                                        style ="width : ${width}%">
                                         <span class="content">
                                             <h5>Idle</h5>${timeStay}초
                                         </span>
