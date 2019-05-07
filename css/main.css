@@ -19,16 +19,6 @@ body {
     background-position: left;
 }
 
-div.panel-default{
-    background-color: rgba( 255, 255, 255, 0.8 );
-}
-
-div#progress-time{
-    background-color: rgba( 255, 255, 255, 0 );
-    margin-bottom: 3px;
-    box-shadow: none;
-}
-
 h1, h2, h3, h4 {
     text-align: center;
     color: var(--main-color-darker);
@@ -40,20 +30,27 @@ h5 {
     margin-bottom: 0px;
 
 }
+
 a:hover {
     text-decoration: none;
 }
 a:active {
     text-decoration: none;
 }
+
 th, td {
     text-align: center;
 }
+
 abbr {
     text-decoration: none;
 }
 
 /* 부트스트랩 관련 */
+
+.panel-default {
+    background-color: rgba(255, 255, 255, 0.8);
+}
 
 .btn-primary {
     border-color: var(--main-color-darker);
@@ -80,28 +77,45 @@ abbr {
 
 .progress {
     height: 50px;
+    background-color: rgba(255, 255, 255, 0.8);
 }
 .progress-slim {
     height: 20px !important;
 }
-
-.progress-bar-blank {
+#progress-arrival {
+    height: auto;
     background: transparent;
-    color: darkgray;
+    box-shadow: none;
+    margin: 0;
+}
+.progress-bar-arrival {
+    color: black;
+    background: transparent;
+    box-shadow: none;
+}
+#progress-processor {
+    margin: 0;
+}
+.progress-bar-blank { /* Idle */
+    color: lightgray;
+    background: transparent;
 }
 
-.progress .progress-bar{
-    -webkit-animation: 2s linear 0s normal none infinite running progress-bar-stripes,animate-positive 1s;
-    animation: 2s linear 0s normal none infinite running progress-bar-stripes,animate-positive 1s;
-}
-@-webkit-keyframes animate-positive{
-    0%{ width: 0; }
-}
-@keyframes animate-positive{
-    0%{ width: 0; }
-}
+/* 애니메이션 */
+
 .row [class*='col-'] {
-    transition: all 0.5s ease-in-out;
+    transition: all 0.5s ease-in-out;  /* DELAY */
+}
+
+.progress .progress-bar {
+    -webkit-animation: 2s linear 0s normal none infinite running progress-bar-stripes, animate 1s;
+    animation: 2s linear 0s normal none infinite running progress-bar-stripes, animate 1s;
+}
+@-webkit-keyframes animate {
+    0% { width: 0; }
+}
+@keyframes animate {
+    0% { width: 0; }
 }
 
 /* style 속성 관련 */
