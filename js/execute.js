@@ -61,11 +61,9 @@ function RR(cntProcess, arrivals, bursts, delta) {
     });
     // 도착시간 기준 정렬
     processes.sort((a, b) => a.arrival - b.arrival ? a.arrival - b.arrival : a.pid - b.pid);
-
     let time = 0;
     let waitings = [null], turnArounds = [null], pStates = [];
     let readyQ = [];
-
     while (processes.length || readyQ.length) {
         let preemption = false;  // 끝내고 나온 프로세스가 있는지 검사
         if (readyQ.length) {
