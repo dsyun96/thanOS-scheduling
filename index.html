@@ -302,7 +302,7 @@
                     // 프로세스 진행 바 생성
                     $('#panel-process').append(`
                         <span>P${i}</span>
-                        <div id="abc${i}" class="progress progress-slim">
+                        <div id="process${i}" class="progress progress-slim">
                             <div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" style="width: 0%">
                                  0%
                             </div>
@@ -380,9 +380,9 @@
                             width = (timeStay / bursts[pStates[i][0]]) * 100;
                             Eachprocess[pStates[i][0]] += width;
                             Printpercent =  Eachprocess[pStates[i][0]].toFixed(2);
-                            $(`#abc${pStates[i][0]}`).find('div').css('width', `${Eachprocess[pStates[i][0]]}%`);
-                            $(`#abc${pStates[i][0]}`).find('div').css('background-color', `${colors[pStates[i][0]]}`);
-                            $(`#abc${pStates[i][0]}`).find('div').text(`${Printpercent}%`);
+                            $(`#process${pStates[i][0]}`).find('div').css('width', `${Eachprocess[pStates[i][0]]}%`);
+                            $(`#process${pStates[i][0]}`).find('div').css('background-color', `${colors[pStates[i][0]]}`);
+                            $(`#process${pStates[i][0]}`).find('div').text(`${Printpercent}%`);
                         }, 1000 * i);  // 딜레이
                     }(i));  // 무명 함수 인자
                 }
