@@ -107,7 +107,7 @@ abbr {
     transition: all 0.5s ease-in-out;  /* DELAY */
 }
 
-.progress .progress-bar {
+.progress-bar {
     -webkit-animation: 2s linear 0s normal none infinite running progress-bar-stripes, animate 1s;
     animation: 2s linear 0s normal none infinite running progress-bar-stripes, animate 1s;
 }
