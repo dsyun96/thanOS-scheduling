@@ -61,11 +61,9 @@ function RR(cntProcess, arrivals, bursts, delta) {
     });
     // 도착시간 기준 정렬
     processes.sort((a, b) => a.arrival - b.arrival ? a.arrival - b.arrival : a.pid - b.pid);
-
     let time = 0;
     let waitings = [null], turnArounds = [null], pStates = [];
     let readyQ = [];
-
     while (processes.length || readyQ.length) {
         let preemption = false;  // 끝내고 나온 프로세스가 있는지 검사
         if (readyQ.length) {
@@ -225,12 +223,14 @@ function HRRN(cntProcess, arrivals, bursts) {
     let waitings = [null], turnArounds = [null], pStates = [];
     let time = 0;
 
-    while (1) {
+    while (true) {
         let readyQ = [], fastTime = Infinity;
-        for (let i = 0; i < cntProcess; ++i) if (processes[i].burst > 0) {
-            fastTime = Math.min(fastTime, processes[i].arrival);
-            if (processes[i].arrival <= time) readyQ.push(i);
-        }
+        for (let i = 0; i < cntProcess; ++i)
+            if (processes[i].burst > 0) {
+                fastTime = Math.min(fastTime, processes[i].arrival);
+                if (processes[i].arrival <= time)
+                    readyQ.push(i);
+            }
 
         if (fastTime === Infinity) break;
 
@@ -261,4 +261,42 @@ function HRRN(cntProcess, arrivals, bursts) {
     }
 
     return [waitings, turnArounds, pStates];
+}
+
+function InfinityGauntlet(cntProcess, arrivals, bursts) {
+    let processes = getProcesses(cntProcess, arrivals, bursts);
+
+    // 랜덤하게 절반 프로세스 삭제
+    processes.sort(() => Math.random() - 0.5);
+    let killed = []; // 죽은 프로세스
+    let killCnt = Math.floor(cntProcess / 2);
+    cntProcess -= killCnt;
+    while (killCnt-- > 0)
+        killed.push(processes.shift());
+    killed = killed.map(x => x.pid);
+    killed.sort((a, b) => a - b);
+
+
+    // 남은 프로세스는 FCFS로 처리
+    processes.sort((a, b) => a.arrival - b.arrival ? a.arrival - b.arrival : a.pid - b.pid);
+
+    let waitings = [null], turnArounds = [null], pStates = [];
+    let time = 0;
+
+    for (let i = 0; i < cntProcess; ++i) {
+        let now = processes[i];
+
+        if (time < now.arrival) {
+            pStates.push([null, time, now.arrival - time]);
+            time = now.arrival;
+        }
+
+        turnArounds[now.pid] = time + now.burst - now.arrival;
+        waitings[now.pid] = turnArounds[now.pid] - bursts[now.pid];
+        pStates.push([now.pid, time, now.burst]);
+
+        time += now.burst;
+    }
+
+    return [waitings, turnArounds, pStates, killed];
 }
