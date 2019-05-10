@@ -431,12 +431,11 @@
                     let totalNTT = 0;
                     let cntAlive = 0;
                     for (let i = 1; i <= cntProcess; ++i) {
-                        let isCasualty = (waitings[i] === undefined);
                         let ntt = turnArounds[i] / bursts[i]
                         $(`#wt-${i}`).html(`${waitings[i]}`);
                         $(`#tt-${i}`).html(`${turnArounds[i]}`);
                         $(`#ntt-${i}`).html(`${ntt.toFixed(2)}`);
-                        if (!isCasualty) {
+                        if (waitings[i] != undefined) {
                             ++cntAlive;
                             totalWT += waitings[i];
                             totalTT += turnArounds[i];
