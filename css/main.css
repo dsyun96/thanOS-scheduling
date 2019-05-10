@@ -97,7 +97,7 @@ abbr {
     margin: 0;
 }
 .progress-bar-blank { /* Idle */
-    color: lightgray;
+    color: gray;
     background: transparent;
 }
 
