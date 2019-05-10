@@ -11,9 +11,9 @@ function getRandomColor() {
 function setColors(colors, cntProcess) {
     for(let i = 1; i <= cntProcess; ++i) {
         colors.push(getRandomColor());
-        for(let j = 1; j < i; j++)
+        for(let j = 1; j < i; ++j)
         {
-            if(colors[j] == colors[i]) {
+            if(colors[j] === colors[i]) {
                 colors.pop();
                 --i;
                 break;
