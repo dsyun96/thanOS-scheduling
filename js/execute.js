@@ -49,9 +49,9 @@ function FCFS(cntProcess, arrivals, bursts) {
 }
 
 /***************************************************
- * 
+ *
  *  RR
- * 
+ *
  ***************************************************/
 function RR(cntProcess, arrivals, bursts, delta) {
     let processes = getProcesses(cntProcess, arrivals, bursts);
@@ -124,7 +124,7 @@ function SPN(cntProcess, arrivals, bursts) {
                 let now = processes[readyQ[i]];
                 let nowLen = now.burst;
 
-                if (len > nowLen) {
+                if (len > nowLen || len == nowLen && now.pid < processes[idx].pid) {
                     len = nowLen;
                     idx = readyQ[i];
                 }
@@ -179,7 +179,7 @@ function SRTN(cntProcess, arrivals, bursts) {
             let idx = -1, max = Infinity;
             for (let j = 0; j < readyQ.length; ++j) {
                 let now = processes[readyQ[j]];
-                if (now.burst > 0 && now.burst < max) {
+                if (now.burst > 0 && (now.burst < max || now.burst == max && now.pid < processes[idx].pid)) {
                     max = now.burst;
                     idx = readyQ[j];
                 }
@@ -244,7 +244,7 @@ function HRRN(cntProcess, arrivals, bursts) {
                 let now = processes[readyQ[i]];
                 let nowHrrn = (time - now.arrival + now.burst) / now.burst;
 
-                if (nowHrrn > hrrn) {
+                if (nowHrrn > hrrn || nowHrrn == hrrn && now.pid < processes[idx].pid) {
                     hrrn = nowHrrn;
                     idx = readyQ[i];
                 }

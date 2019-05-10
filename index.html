@@ -25,6 +25,7 @@
 <div class="container">
 
     <div class="row">
+
         <!-- 1열: 입력 폼 -->
         <div class="col-md-6 col-md-offset-3 col-input">
             <div class="panel panel-default">
@@ -74,7 +75,7 @@
                             <div class="radio-inline">
                                 <label>
                                     <input type="radio" name="technique" value="INFINITY GAUNTLET" required>
-                                    <abbr class="sans" title="다뿌셔">INFINITY GAUNTLET</abbr>
+                                    <span class="sans">INFINITY GAUNTLET</span>
                                 </label>
                             </div>
                         </div>
@@ -134,6 +135,7 @@
                 <div class="panel-body" id="panel-process"></div>
             </div>
         </div>
+
     </div>
 
     <!-- Bootstrap 3.3.7 -->
@@ -161,10 +163,8 @@
                 else if (isRR) {
                     isRR = false;
                     $('#delta').remove();
-                    $('#quantum').remove();
                 }
             });
-
 
             // 프로세스 추가 버튼 이벤트
             $('#add-process').click(() => {
@@ -200,6 +200,17 @@
 
             // TODO: 실행  버튼 이벤트
             function run() {
+
+                // 이미 스케줄링 중인 경우 return
+                if (isRunning) {
+                    alert('이미 실행 중이에요.');
+                    $('#btn-run').prop('disabled', true);
+                    return;
+                }
+
+                isRunning = true;
+                $('#btn-run').prop('disabled', true);
+
                 const DELAY = 1000;  // 출력 폼이 나오기까지의 딜레이 (css 파일 .row [class*='col-'] 참조)
                 let technique = $('input[type=radio][name=technique]:checked').val();
                 let delta = null;
@@ -207,39 +218,21 @@
                 let bursts = [null];
 
                 for (let i = 1; i <= cntProcess; ++i) {
-                    // 동적 요소 값 탐색
+                    // 동적 요소 탐색
                     arrivals.push(parseInt($(`#arrival-${i}`).val()));
                     bursts.push(parseInt($(`#burst-${i}`).val()));
                 }
 
-                // TODO: 입력 값 유효성 검사
+                // 각 프로세스의 진행 바 배경색 생성
+                let colors = [null];
+                setColors(colors, cntProcess);  // funcs.js 참조
 
-                if (isRunning) {
-                    alert('이미 실행 중이에요.');
-                    $('#btn-run').prop('disabled', true);
-                    return;
-                }
-                else if (technique) {
-                    $('.col-input').removeClass('col-md-offset-3');
-                    setTimeout(() => {
-                        document.getElementById('out-form').style.opacity = '1';
-                    }, DELAY-500);
-                }
-                else {
-                    alert('프로세스 기법을 선택하세요.');
-                    technique.focus();
-                    return;
-                }
-
-                // TODO: 유효성 검사 끝 / 함수 실행
-
-                isRunning = true;
-                $('#btn-run').prop('disabled', true);
+                // TODO: 함수 실행
 
                 let waitings = [];
                 let turnArounds = [];
                 let pStates = [];
-                let killed = [];  // 건틀릿
+                let casualties = [];  // 건틀릿
 
                 switch (technique) {
                     case 'FCFS':
@@ -259,7 +252,9 @@
                         [waitings, turnArounds, pStates] = HRRN(cntProcess, arrivals, bursts);
                         break;
                     case 'INFINITY GAUNTLET':
-                        [waitings, turnArounds, pStates] = InfinityGauntlet(cntProcess, arrivals, bursts, killed);
+                        [waitings, turnArounds, pStates, casualties] = InfinityGauntlet(cntProcess, arrivals, bursts);
+                        console.log(pStates);
+                        console.log(casualties);
                         break;
                 }
 
@@ -269,6 +264,12 @@
                 $('body').css('background-image', 'URL(https://ifh.cc/g/jkILS.png');
                 $('body').css('background-size', '2500px 1500px');
                 $('body').css('background-position', 'center');
+
+                // 출력 파트 표시
+                $('.col-input').removeClass('col-md-offset-3');
+                setTimeout(() => {
+                    document.getElementById('out-form').style.opacity = '1';
+                }, DELAY - 500);
 
                 if (technique === 'RR') {
                     $('#out-title').html(`
@@ -288,10 +289,6 @@
                 $('#tbody-process').empty();
                 $('#panel-process').empty();
 
-                // 배경색 생성
-                let colors = [null];
-                setColors(colors, cntProcess);  // funcs.js 참조
-
                 // 도착 시간 바 초기화 (0을 미리 넣어서 튀어나오지 않게)
                 $('#progress-arrival').append(`
                     <div class="progress-bar progress-bar-arrival" style="width: 10%;">
@@ -303,24 +300,26 @@
 
                 for (let i = 1; i <= cntProcess; ++i) {
 
-                    // 테이블 출력
+                    // 테이블 레코드 생성
                     $('#tbody-process').append(`
-                        <tr>
+                        <tr id="tr-${i}">
                             <td>P${i}</td>
                             <td>${arrivals[i]}</td>
                             <td>${bursts[i]}</td>
-                            <td>${waitings[i]}</td>
-                            <td>${turnArounds[i]}</td>
-                            <td>${(turnArounds[i]/bursts[i]).toFixed(2)}</td>
+                            <td id="wt-${i}"></td>
+                            <td id="tt-${i}"></td>
+                            <td id="ntt-${i}"></td>
                         </tr>
                     `);
 
                     // 프로세스 진행 바 초기화
                     $('#panel-process').append(`
-                        <span>P${i}</span>
-                        <div class="progress progress-slim">
-                            <div class="progress-bar progress-bar-info progress-bar-striped active" id="progress-${i}" style="background-color: ${colors[i]}; width: 0%">
-                                 0%
+                        <div id="div-${i}">
+                            <span>P${i}</span>
+                            <div class="progress progress-slim">
+                                <div class="progress-bar progress-bar-info progress-bar-striped active" id="progress-bar-${i}" style="background-color: ${colors[i]}; width: 0%">
+                                     0%
+                                </div>
                             </div>
                         </div>
                     `);
@@ -328,6 +327,18 @@
                 }
 
                 // TODO: 프로그레스 바 애니메이션
+
+                const timeDisappear = 1000;  // 사라지는 데 걸리는 시간
+                let delayGauntlet = 0;  // 스냅 연출로 인한 이후 애니메이션의 딜레이
+                if (technique === 'INFINITY GAUNTLET') {
+                    delayGauntlet = DELAY + timeDisappear * casualties.length;
+                    for (let i = 0; i < casualties.length; ++i) {
+                        setTimeout(() => {
+                            $(document).find(`div#div-${casualties[i]}`).fadeOut(timeDisappear);
+                            $(document).find(`tr#tr-${casualties[i]}`).fadeOut(timeDisappear);
+                        }, DELAY + timeDisappear * i);
+                    }
+                }
 
                 let sum = 0;  // timeStay 합계
                 for (let i = 0; i < pStates.length; ++i) {
@@ -341,78 +352,88 @@
 
                 let timeArrive = 0;
                 for (let i = 0; i < pStates.length; ++i) {
-                    (function(i) {  // 무명 함수
-                        setTimeout(() => {
+                    setTimeout(() => {
 
-                            let pIdx = pStates[i][0];
-                            let timeStay = pStates[i][2];
-                            let width = (timeStay / sum) * 100;  // % 단위
+                        let pIdx = pStates[i][0];
+                        let timeStay = pStates[i][2];
+                        let width = (timeStay / sum) * 100;  // % 단위
 
-                            // 도착 시간 표시 바
-                            if (i == 0) {
-                                $('.progress-bar-arrival').css('width', `${width}%`);
-                            }
-                            else {
-                                $('#progress-arrival').append(`
-                                <div class="progress-bar progress-bar-arrival" style="width: ${width}%;">
+                        // 도착 시간 표시 바
+                        if (i == 0) {
+                            $('.progress-bar-arrival').css('width', `${width}%`);
+                        }
+                        else {
+                            $('#progress-arrival').append(`
+                            <div class="progress-bar progress-bar-arrival" style="width: ${width}%;">
+                                <span class="content">
+                                    <h5 align=left>${timeArrive}</h5>
+                                </span>
+                            </div>
+                        `);
+                        }
+
+                        timeArrive += timeStay;
+
+                        // 프로세서 진행 바
+                        if (pIdx === null || pIdx === undefined) {
+                            $('#progress-processor').append(`
+                                <div class="progress-bar progress-bar-blank progress-bar-striped active"
+                                    style ="width : ${width}%">
                                     <span class="content">
-                                        <h5 align=left>${timeArrive}</h5>
+                                        <h5>Idle</h5>${timeStay}
                                     </span>
                                 </div>
                             `);
-                            }
-
-                            timeArrive += timeStay;
-
-                            // 프로세서 진행 바
-                            if (pIdx === null || pIdx === undefined) {
+                        }
+                        else {
+                            if (technique === 'FCFS' || technique === 'SPN' || technique === 'HRRN' || technique === 'INFINITY GAUNTLET') {
                                 $('#progress-processor').append(`
-                                    <div class="progress-bar progress-bar-blank progress-bar-striped active"
-                                        style ="width : ${width}%">
+                                    <div class="progress-bar progress-bar-striped active"
+                                        style ="width : ${width}%; background-color: ${colors[pIdx]};">
                                         <span class="content">
-                                            <h5>Idle</h5>${timeStay}
+                                            <h5>P${pIdx}</h5>${bursts[pIdx]}
                                         </span>
                                     </div>
                                 `);
                             }
-                            else {
-                                if (technique == 'FCFS' || technique == 'SPN' || technique == 'HRRN') {
-                                    $('#progress-processor').append(`
-                                        <div class="progress-bar progress-bar-striped active"
-                                            style ="width : ${width}%; background-color: ${colors[pIdx]};">
-                                            <span class="content">
-                                                <h5>P${pIdx}</h5>${bursts[pIdx]}
-                                            </span>
-                                        </div>
-                                    `);
-                                }
-                                else if (technique == 'RR' || technique == 'SRTN') {
-                                    $('#progress-processor').append(`
-                                        <div class="progress-bar progress-bar-striped active"
-                                             style ="width : ${width}%; background-color: ${colors[pIdx]};">
-                                            <span class="content">
-                                                <h5>P${pIdx}</h5>${timeStay} <span class="lightgray">/ ${bursts[pIdx]}</span>
-                                            </span>
-                                        </div>
-                                    `);
-                                }
+                            else if (technique === 'RR' || technique === 'SRTN') {
+                                $('#progress-processor').append(`
+                                    <div class="progress-bar progress-bar-striped active"
+                                         style ="width : ${width}%; background-color: ${colors[pIdx]};">
+                                        <span class="content">
+                                            <h5>P${pIdx}</h5>${timeStay} <span class="lightgray">/ ${bursts[pIdx]}</span>
+                                        </span>
+                                    </div>
+                                `);
                             }
+                        }
 
-                            // 프로세스 각각의 진행 바
-                            width = (timeStay / bursts[pIdx]) * 100;
-                            widths[pIdx] += width;
-                            $(`#progress-${pIdx}`).css('width', `${widths[pIdx]}%`);
-                            $(`#progress-${pIdx}`).text(`${widths[pIdx].toFixed(2)}%`);
+                        // 프로세스 각각의 진행 바
+                        width = (timeStay / bursts[pIdx]) * 100;
+                        widths[pIdx] += width;
+                        $(`#progress-bar-${pIdx}`).css('width', `${widths[pIdx]}%`);
+                        $(`#progress-bar-${pIdx}`).text(`${widths[pIdx].toFixed(2)}%`);
 
-                        }, DELAY + 1000 * i);  // end of setTimeout()
-                    }(i));  // 무명 함수 인자
+                    }, DELAY + delayGauntlet + 1000 * i);  // end of setTimeout()
                 }
+
+                let delayTotal = DELAY + delayGauntlet + 1000 * pStates.length;
+
+                // 테이블 완성
+                setTimeout(() => {
+                    for (let i = 1; i <= cntProcess; ++i) {
+                        let isCasualty = (waitings[i] === undefined);
+                        $(`#wt-${i}`).html(`${(isCasualty) ? '?' : waitings[i]}`);
+                        $(`#tt-${i}`).html(`${(isCasualty) ? '?' : turnArounds[i]}`);
+                        $(`#ntt-${i}`).html(`${(isCasualty) ? '?' : (turnArounds[i] / bursts[i]).toFixed(2)}`);
+                    }
+                }, delayTotal);
 
                 // 실행이 끝나면 실행 버튼 재활성화
                 setTimeout(() => {
                     isRunning = false;
                     $('#btn-run').prop('disabled', false);
-                }, DELAY + 1000 * pStates.length);
+                }, delayTotal);
             }  // end of run()
 
             $(document).on('submit', '.form', function(e) {
