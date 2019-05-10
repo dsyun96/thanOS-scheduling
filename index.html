@@ -253,8 +253,6 @@
                         break;
                     case 'INFINITY GAUNTLET':
                         [waitings, turnArounds, pStates, casualties] = InfinityGauntlet(cntProcess, arrivals, bursts);
-                        console.log(pStates);
-                        console.log(casualties);
                         break;
                 }
 
@@ -283,7 +281,6 @@
                 }
 
                 // 테이블, 시간 바, 간트 바, 프로세스 패널 초기화
-
                 $('#progress-arrival').empty();
                 $('#progress-processor').empty();
                 $('#tbody-process').empty();
@@ -291,7 +288,7 @@
 
                 // 도착 시간 바 초기화 (0을 미리 넣어서 튀어나오지 않게)
                 $('#progress-arrival').append(`
-                    <div class="progress-bar progress-bar-arrival" style="width: 10%;">
+                    <div class="progress-bar progress-bar-arrival">
                         <span class="content">
                             <h5 align=left>0</h5>
                         </span>
@@ -386,25 +383,31 @@
                             `);
                         }
                         else {
-                            if (technique === 'FCFS' || technique === 'SPN' || technique === 'HRRN' || technique === 'INFINITY GAUNTLET') {
-                                $('#progress-processor').append(`
-                                    <div class="progress-bar progress-bar-striped active"
-                                        style ="width : ${width}%; background-color: ${colors[pIdx]};">
-                                        <span class="content">
-                                            <h5>P${pIdx}</h5>${bursts[pIdx]}
-                                        </span>
-                                    </div>
-                                `);
-                            }
-                            else if (technique === 'RR' || technique === 'SRTN') {
-                                $('#progress-processor').append(`
-                                    <div class="progress-bar progress-bar-striped active"
-                                         style ="width : ${width}%; background-color: ${colors[pIdx]};">
-                                        <span class="content">
-                                            <h5>P${pIdx}</h5>${timeStay} <span class="lightgray">/ ${bursts[pIdx]}</span>
-                                        </span>
-                                    </div>
-                                `);
+                            switch (technique) {
+                                case 'FCFS':
+                                case 'SPN':
+                                case 'HRRN':
+                                case 'INFINITY GAUNTLET':
+                                    $('#progress-processor').append(`
+                                        <div class="progress-bar progress-bar-striped active"
+                                            style ="width : ${width}%; background-color: ${colors[pIdx]};">
+                                            <span class="content">
+                                                <h5>P${pIdx}</h5>${bursts[pIdx]}
+                                            </span>
+                                        </div>
+                                    `);
+                                    break;
+                                case 'RR':
+                                case 'SRTN':
+                                    $('#progress-processor').append(`
+                                        <div class="progress-bar progress-bar-striped active"
+                                             style ="width : ${width}%; background-color: ${colors[pIdx]};">
+                                            <span class="content">
+                                                <h5>P${pIdx}</h5>${timeStay} <span class="lightgray">/ ${bursts[pIdx]}</span>
+                                            </span>
+                                        </div>
+                                    `);
+                                    break;
                             }
                         }
 
@@ -417,19 +420,44 @@
                     }, DELAY + delayGauntlet + 1000 * i);  // end of setTimeout()
                 }
 
+                // TODO: 애니메이션 종료 후
+
                 let delayTotal = DELAY + delayGauntlet + 1000 * pStates.length;
 
                 // 테이블 완성
                 setTimeout(() => {
+                    let totalWT = 0;
+                    let totalTT = 0;
+                    let totalNTT = 0;
+                    let cntAlive = 0;
                     for (let i = 1; i <= cntProcess; ++i) {
-                        let isCasualty = (waitings[i] === undefined);
-                        $(`#wt-${i}`).html(`${(isCasualty) ? '?' : waitings[i]}`);
-                        $(`#tt-${i}`).html(`${(isCasualty) ? '?' : turnArounds[i]}`);
-                        $(`#ntt-${i}`).html(`${(isCasualty) ? '?' : (turnArounds[i] / bursts[i]).toFixed(2)}`);
+                        let ntt = turnArounds[i] / bursts[i]
+                        $(`#wt-${i}`).html(`${waitings[i]}`);
+                        $(`#tt-${i}`).html(`${turnArounds[i]}`);
+                        $(`#ntt-${i}`).html(`${ntt.toFixed(2)}`);
+                        if (waitings[i] != undefined) {
+                            ++cntAlive;
+                            totalWT += waitings[i];
+                            totalTT += turnArounds[i];
+                            totalNTT += ntt;
+                        }
                     }
+
+                    // 통계
+                    let avgWT = (totalWT / cntAlive).toFixed(2);
+                    let avgTT = (totalTT / cntAlive).toFixed(2);
+                    let avgNTT = (totalNTT / cntAlive).toFixed(2);
+                    $('#tbody-process').append(`
+                        <tr>
+                            <td colspan="3"></td>
+                            <td id="td-total-wt">${avgWT}</td>
+                            <td id="td-total-tt">${avgTT}</td>
+                            <td id="td-total-ntt">${avgNTT}</td>
+                        </tr>
+                    `);
                 }, delayTotal);
 
-                // 실행이 끝나면 실행 버튼 재활성화
+                // 실행 버튼 재활성화
                 setTimeout(() => {
                     isRunning = false;
                     $('#btn-run').prop('disabled', false);
